@@ -1,6 +1,6 @@
 from grammar import *
 
-class LALR1:
+class LalrOne:
   class LrZeroKernelItem:
     def __init__(self):
       self.propagatesTo = set()
@@ -15,12 +15,12 @@ class LALR1:
     
     # STEP 1
     # ======
-    dfa = LR0.getAutomaton(gr)
-    kstates = [LR0.kernels(st) for st in dfa.states]
+    dfa = LrZero.getAutomaton(gr)
+    kstates = [LrZero.kernels(st) for st in dfa.states]
     
     # STEPS 2, 3
     # ==========
-    table = [{item: LALR1.LrZeroKernelItem() for item in kstates[i]} for i in range(len(kstates))]
+    table = [{item: LalrOne.LrZeroKernelItem() for item in kstates[i]} for i in range(len(kstates))]
     table[0][(0, 0)].lookaheads.add(Grammar.endOfInput())
     
     for iState in range(len(kstates)):
@@ -28,7 +28,7 @@ class LALR1:
       #print('For state', iState, 'we have symbols', stateSymbols)
       
       for iItem in kstates[iState]:
-        J = LALR1.closure(gr, [(iItem, Grammar.freeSymbol())])
+        J = LalrOne.closure(gr, [(iItem, Grammar.freeSymbol())])
         #print('\titem', iItem, 'closure', J)
         
         for sym in stateSymbols:
@@ -90,7 +90,7 @@ class LALR1:
           itemSet = (iItem, sym)
           result[iStateId].add(itemSet)
       # Add non-kernel kernel items
-      result[iStateId] = LALR1.closure(gr, result[iStateId])
+      result[iStateId] = LalrOne.closure(gr, result[iStateId])
     
     return result
   
@@ -122,8 +122,22 @@ class LALR1:
       current = newElements
     
     return frozenset(result)
+  
+  @staticmethod
+  def goto(gr, itemSet, inp):
+    J = set()
+    for (item, lookahead) in itemSet:
+      prodId, dot = item
+      pname, pbody = gr.productions[prodId]
+      if dot == len(pbody) or pbody[dot] != inp:
+        continue
+      
+      newItem = ((prodId, dot + 1), lookahead)
+      J.add(newItem)
+    
+    return LalrOne.closure(gr, J)
 
-class LR0:
+class LrZero:
   class Automaton:
     def __init__(self):
       self.states = []
@@ -132,8 +146,8 @@ class LR0:
   
   @staticmethod
   def getAutomaton(gr):
-    dfa = LR0.Automaton()
-    dfa.states = [LR0.closure(gr, [(0, 0)])]
+    dfa = LrZero.Automaton()
+    dfa.states = [LrZero.closure(gr, [(0, 0)])]
     nextId = 0
     
     dfa.idFromState[dfa.states[-1]] = nextId
@@ -147,7 +161,7 @@ class LR0:
         itemSetId = dfa.idFromState[itemSet]
         
         for symbol in gr.symbols:
-          nextItemSet = LR0.goto(gr, itemSet, symbol)
+          nextItemSet = LrZero.goto(gr, itemSet, symbol)
           if len(nextItemSet) == 0:
             continue
           
@@ -199,7 +213,7 @@ class LR0:
       if y < len(pbody) and pbody[y] == inp:
         kitems.add((x, y + 1))
     
-    return LR0.closure(gr, kitems)
+    return LrZero.closure(gr, kitems)
   
   @staticmethod
   def kernels(itemSet):

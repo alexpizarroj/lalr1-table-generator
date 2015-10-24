@@ -95,10 +95,21 @@ def getSample3():
   ])]
   return Grammar(nonterms)
 
+def getSample4():
+  # From Dragonbook, page 263, grammar 4.55 below example 4.54
+  nonterms = []  
+  nonterms += [Nonterm('S', [
+    "C C"
+  ])]
+  nonterms += [Nonterm('C', [
+    "'c' C", "'d'"
+  ])]
+  return Grammar(nonterms)
+
 # --------------------------------------------------------------------------------------------------
 
 def main():
-  gr = getSample2()
+  gr = getSample4()
   
   print(gr)
   print('Grammar total productions:', len(gr.productions))
@@ -108,14 +119,22 @@ def main():
     print('First(%s): ' % repr(sym), gr.first(sym))
   print('')
   
-  dfa = LR0.getAutomaton(gr)
-  print(len(dfa.states), 'states in the canonical LR0 collection')
+  dfa = LrZero.getAutomaton(gr)
+  
+  print('LR(0) canonical collection with', len(dfa.states), 'states')
   for itemSet in dfa.states:
     print('State', dfa.idFromState[itemSet], 'with %d item(s)' % len(itemSet), '->', repr(itemSet))
   print('Goto Table:', dfa.goto, '\n')
   
-  dfa2 = LALR1.getCanonicalCollection(gr)
-  print(dfa2)
+  col = LalrOne.getCanonicalCollection(gr)
+  colSet = frozenset(col)
+  idFromState = {col[i]:i for i in range(len(col))}
+  
+  print('LARL(1) canonical collection with', len(col), 'states')
+  for stateId in range(len(col)):
+    print('State', stateId)
+    for item, lookahead in col[stateId]:
+      print('\tItem', item, 'lookahead', lookahead)
 
 if __name__ == "__main__":
   main()
