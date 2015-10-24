@@ -78,3 +78,17 @@ def getExampleGrammar1():
     "'x'", "'*' E"
   ])]
   return Grammar(nonterms)
+
+
+def getExampleGrammar2():
+  nonterms = []  
+  nonterms += [Nonterm('S', [
+    "L '=' R", "R"
+  ])]
+  nonterms += [Nonterm('L', [
+    "'*' R", "ID"
+  ])]
+  nonterms += [Nonterm('R', [
+    "L"
+  ])]
+  return Grammar(nonterms)

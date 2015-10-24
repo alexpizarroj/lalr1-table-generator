@@ -1,6 +1,6 @@
 class Nonterm:
   def __init__(self, name, productions):
-    """Creates an instance of Nonterm to represent a set of grammar productiosn for a non terminal.
+    """Creates an instance of Nonterm to represent a set of grammar productions for a non terminal.
     
     Keyword arguments:
     name -- the left hand side of the set of nonterms, a.k.a. the name of the non terminal
@@ -15,7 +15,7 @@ class Nonterm:
     return self.name
   
   def __str__(self):
-    return self.__toStr()
+    return self.__toStr(False)
   
   def __toStr(self, oneLinePerProduction = True):
     altProductionIndent = '\n' + ' ' * len(self.name) + '|'
@@ -59,13 +59,16 @@ class Grammar:
       for prod in nt.productions:
         for idx in range(len(prod)):
           symbol = prod[idx]
-          if not isinstance(symbol, str):
-            continue
-          
-          if symbol in nontermsDict:
-            prod[idx] = nontermsDict[symbol]
+          if isinstance(symbol, str):
+            if symbol in nontermsDict:
+              prod[idx] = nontermsDict[symbol]
+            else:
+              self.terminals.add(symbol)
+          elif isinstance(symbol, Nonterm):
+            if symbol not in self.nonterms:
+              raise KeyError('Non-terminal', repr(symbol), ' is not in the grammar')
           else:
-            self.terminals.add(symbol)
+            raise TypeError("Unsupported type '%s' inside of production" % (type(symbol).__name__))
     
     self.terminals = sorted(list(self.terminals))
     self.symbols += self.terminals
@@ -75,16 +78,72 @@ class Grammar:
       self.nontermOffset[nt.name] = len(self.productions)
       for prod in nt.productions:
         self.productions += [(nt.name, prod)]
+    
+    # Self-explanatory
+    self.__buildFirstSets()
+    
+  
+  def __buildFirstSets(self):
+    # Build First Sets iteratively (see Dragon Book, page 221)
+    self.__firstSets = {}
+    #  Starting Values
+    for s in self.symbols:
+      if isinstance(s, str):
+        self.__firstSets[s] = set([s])
+      else:
+        self.__firstSets[s] = set()
+        if [] in s.productions:
+          self.__firstSets[s].add(None)
+    # Iterative Updating
+    repeat = True
+    while repeat:
+      repeat = False
+      for nt in self.nonterms:
+        curfs = self.__firstSets[nt]
+        curfsLen = len(curfs)
+        
+        for prod in nt.productions:
+          skippable_symbols = 0
+          for sym in prod:
+            fs = self.__firstSets[sym]
+            curfs.update(fs - set([None]))
+            if None in fs:
+              skippable_symbols += 1
+            else:
+              break
+          if skippable_symbols == len(prod):
+            curfs.add(None)
+        
+        if len(curfs) > curfsLen:
+          repeat = True
   
   def __str__(self):
     output = ''
     addEndl = False
-    
     for nt in self.nonterms:
       output += ('\n\n' if addEndl else '') + str(nt)
       addEndl = True
-      
     return output
+  
+  def first(self, x):
+    if (isinstance(x, str) or isinstance(x, Nonterm)):
+      return self.__firstSets[x]
+    
+    res = set()
+    skippable_symbols = 0
+    
+    for sym in x:
+      fs = self.__firstSets[sym]
+      res.update(fs - set([None]))
+      if None in fs:
+        skippable_symbols += 1
+      else:
+        break
+    
+    if skippable_symbols == len(x):
+      res.add(None)
+    
+    return res
 
 class LrZeroAutomaton:
   def __init__(self):
