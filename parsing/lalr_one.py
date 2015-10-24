@@ -1,7 +1,7 @@
 import parsing.lr_zero as lr_zero
 
 
-class LrZeroKernelItem:
+class LrZeroItemTableEntry:
     def __init__(self):
         self.propagates_to = set()
         self.lookaheads = set()
@@ -22,7 +22,7 @@ def get_canonical_collection(gr):
 
     # STEPS 2, 3
     # ==========
-    table = [{item: LrZeroKernelItem() for item in kstates[i]} for i in range(n_states)]
+    table = [{item: LrZeroItemTableEntry() for item in kstates[i]} for i in range(n_states)]
     table[0][(0, 0)].lookaheads.add(gr.end_of_input())
 
     for i_state_id in range(n_states):
