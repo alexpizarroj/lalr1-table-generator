@@ -1,6 +1,6 @@
-class Nonterm:
+class NonTerminal:
   def __init__(self, name, productions):
-    """Creates an instance of Nonterm to represent a set of grammar productions for a non terminal.
+    """Represents a set of grammar productions for a non-terminal.
     
     Keyword arguments:
     name -- the left hand side of the set of nonterms, a.k.a. the name of the non terminal
@@ -14,97 +14,116 @@ class Nonterm:
   def __repr__(self):
     return self.name
   
-  def __str__(self):
-    return self.__toStr(False)
-  
-  def __toStr(self, oneLinePerProduction = True):
-    altProductionIndent = '\n' + ' ' * len(self.name) + '|'
-    firstProduction = True
+  def stringify(self, pretty = True):
+    title = '%s: ' % self.name
     
-    output = self.name + ':'
-    for prod in self.productions:
-      if not firstProduction:
-        output += (altProductionIndent if oneLinePerProduction else ' |')
+    if pretty:
+      separator = '\n'
+      prefix = '%s| '% (' ' * len(self.name))
+    else:
+      separator = ' | '
+      prefix = ''
       
-      firstProduction = False
-      output += ''.join(' ' + (x.name if isinstance(x, Nonterm) else str(x)) for x in prod)
+    strprod = lambda prod: ' '.join(str(sym) for sym in prod)
     
-    return output
+    rules = (separator + prefix).join(strprod(prod) for prod in self.productions)
+    
+    return title + rules
 
 class Grammar:
-  def __init__(self, nonterms, startNonterm = None):
-    """TO DO: Add documentation
-    """
-    if startNonterm is None or startNonterm not in nonterms:
-      startNonterm = nonterms[0]
+  def __init__(self, nonterms, start_nonterminal = None):
+    # Grammar start symbol
+    if start_nonterminal is None or start_nonterminal not in nonterms:
+      start_nonterminal = nonterms[0]
     
-    # Non-terminals and their productions
-    self.nonterms = [Nonterm('$accept', [[startNonterm.name]])] + nonterms
-    # List of terminals of the grammar (the set will be turned into a list later on)
-    self.terminals = set()
-    # List of symbols of the grammar
+    # List of non-terminals
+    self.nonterms = [NonTerminal('$accept', [[start_nonterminal.name]])] + nonterms
+    # List of terminals
+    self.terminals = []
+    # List of symbols (non-terminals + terminals)
     self.symbols = []
     # Enumeration offset for a given NT
-    self.nontermOffset = dict()
+    self.nonterm_offset = dict()
     # Enumerated NT's productions
     self.productions = []
+    # First sets for every grammar symbol
+    self.__first_sets = {}
     
-    nontermsDict = {}
-    for nt in self.nonterms:
-      nontermsDict[nt.name] = nt
+    # Update the reference of each production and, while at it, recognize terminal symbols
+    nonterminal_by_name = {nt.name: nt for nt in self.nonterms}
+    self.symbols += sorted([x for x in self.nonterms], key=lambda nt: nt.name)
     
-    # Update the reference of each production + Recognize terminals + Get all the symbols
-    self.symbols += sorted([y for x, y in nontermsDict.items()], key=lambda nt: nt.name)
     for nt in self.nonterms:
       for prod in nt.productions:
         for idx in range(len(prod)):
           symbol = prod[idx]
+          
           if isinstance(symbol, str):
-            if symbol in nontermsDict:
-              prod[idx] = nontermsDict[symbol]
+            if symbol in nonterminal_by_name:
+              prod[idx] = nonterminal_by_name[symbol]
             else:
-              self.terminals.add(symbol)
-          elif isinstance(symbol, Nonterm):
+              self.terminals.append(symbol)
+          elif isinstance(symbol, NonTerminal):
             if symbol not in self.nonterms:
               raise KeyError('Non-terminal', repr(symbol), ' is not in the grammar')
           else:
             raise TypeError("Unsupported type '%s' inside of production" % (type(symbol).__name__))
     
-    self.terminals = sorted(list(self.terminals))
+    self.terminals = sorted(list(set(self.terminals)))
     self.symbols += self.terminals
     
-    # List all the productions
+    # Enumerate grammar productions
     for nt in self.nonterms:
-      self.nontermOffset[nt] = len(self.productions)
-      for prod in nt.productions:
-        self.productions += [(nt.name, prod)]
+      self.nonterm_offset[nt] = len(self.productions)
+      self.productions += [(nt.name, prod) for prod in nt.productions]
     
-    # Self-explanatory
-    self.__buildFirstSets()
+    # Build grammar first sets
+    self.__build_first_sets()
+  
+  def first(self, x):
+    result = set()
     
-  def __buildFirstSets(self):
-    # Build First Sets iteratively (see Dragon Book, page 221)
-    self.__firstSets = {}
-    #  Starting Values
+    if isinstance(x, str):
+      result.add(x)
+    elif isinstance(x, NonTerminal):
+      result = self.__first_sets[x]
+    else:
+      skippable_symbols = 0
+      for sym in x:
+        fs = self.first(sym)
+        result.update(fs - set([None]))
+        if None in fs:
+          skippable_symbols += 1
+        else:
+          break
+      
+      if skippable_symbols == len(x):
+        result.add(None)
+    
+    return result
+  
+  def __build_first_sets(self):
+    #  Starting First sets values
     for s in self.symbols:
       if isinstance(s, str):
-        self.__firstSets[s] = set([s])
+        self.__first_sets[s] = set([s])
       else:
-        self.__firstSets[s] = set()
+        self.__first_sets[s] = set()
         if [] in s.productions:
-          self.__firstSets[s].add(None)
-    # Iterative Updating
+          self.__first_sets[s].add(None)
+    
+    # Update the sets iteratively (see Dragon Book, page 221)
     repeat = True
     while repeat:
       repeat = False
       for nt in self.nonterms:
-        curfs = self.__firstSets[nt]
-        curfsLen = len(curfs)
+        curfs = self.__first_sets[nt]
+        curfs_len = len(curfs)
         
         for prod in nt.productions:
           skippable_symbols = 0
           for sym in prod:
-            fs = self.__firstSets[sym]
+            fs = self.__first_sets[sym]
             curfs.update(fs - set([None]))
             if None in fs:
               skippable_symbols += 1
@@ -113,43 +132,19 @@ class Grammar:
           if skippable_symbols == len(prod):
             curfs.add(None)
         
-        if len(curfs) > curfsLen:
+        if len(curfs) > curfs_len:
           repeat = True
+    
+    # Freeze the sets
+    self.__first_sets = {x:frozenset(y) for x, y in self.__first_sets.items()}
   
   def __str__(self):
-    output = ''
-    addEndl = False
-    for nt in self.nonterms:
-      output += ('\n' if addEndl else '') + str(nt)
-      addEndl = True
-    return output
-  
-  def first(self, x):
-    res = set()
-    
-    if isinstance(x, str):
-      res.add(x)
-    elif isinstance(x, Nonterm):
-      res = self.__firstSets[x]
-    else:
-      skippable_symbols = 0
-      for sym in x:
-        fs = self.first(sym)
-        res.update(fs - set([None]))
-        if None in fs:
-          skippable_symbols += 1
-        else:
-          break
-      
-      if skippable_symbols == len(x):
-        res.add(None)
-    
-    return res
+    return '\n'.join(nt.stringify() for nt in self.nonterms)
   
   @staticmethod
-  def endOfInput():
+  def end_of_input():
     return '$end'
   
   @staticmethod
-  def freeSymbol():
+  def free_symbol():
     return '$#'

@@ -7,7 +7,8 @@ class LalrOne:
       self.lookaheads = set()
     
     def __repr__(self):
-      return '{ propagatesTo: %s, lookaheads: %s }' % (repr(self.propagatesTo), repr(self.lookaheads))
+      pattern = '{ propagatesTo: %s, lookaheads: %s }'
+      return pattern % (repr(self.propagatesTo), repr(self.lookaheads))
   
   @staticmethod
   def getCanonicalCollection(gr):
@@ -21,14 +22,14 @@ class LalrOne:
     # STEPS 2, 3
     # ==========
     table = [{item: LalrOne.LrZeroKernelItem() for item in kstates[i]} for i in range(len(kstates))]
-    table[0][(0, 0)].lookaheads.add(Grammar.endOfInput())
+    table[0][(0, 0)].lookaheads.add(Grammar.end_of_input())
     
     for iState in range(len(kstates)):
       stateSymbols = [x[1] for x, y in dfa.goto.items() if x[0] == iState]
       #print('For state', iState, 'we have symbols', stateSymbols)
       
       for iItem in kstates[iState]:
-        J = LalrOne.closure(gr, [(iItem, Grammar.freeSymbol())])
+        J = LalrOne.closure(gr, [(iItem, Grammar.free_symbol())])
         #print('\titem', iItem, 'closure', J)
         
         for sym in stateSymbols:
@@ -44,7 +45,7 @@ class LalrOne:
             jItem = (prodIndex, dot + 1)
             #print('\t\titem', jItem, 'state', jState, 'nextSymbol', nextSymbol)
             
-            if nextSymbol == Grammar.freeSymbol():
+            if nextSymbol == Grammar.free_symbol():
               # Conclude that lookaheads propagate from iItem to jItem in jState
               table[iState][iItem].propagatesTo.add((jState, jItem))
             else:
@@ -108,7 +109,7 @@ class LalrOne:
           continue
         
         nt = pbody[dot]
-        ntOffset = gr.nontermOffset[nt]
+        ntOffset = gr.nonterm_offset[nt]
         followingSymbols = pbody[dot+1:] + [lookahead]
         followingTerminals = gr.first(followingSymbols) - set([None])
         
@@ -193,7 +194,7 @@ class LrZero:
           continue
         
         nt = pbody[dot]
-        ntOffset = gr.nontermOffset[nt]
+        ntOffset = gr.nonterm_offset[nt]
         for idx in range(len(nt.productions)):
           newItemSet = (ntOffset + idx, 0)
           if newItemSet not in result:
