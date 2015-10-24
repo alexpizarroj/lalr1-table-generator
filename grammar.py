@@ -78,10 +78,9 @@ class Grammar:
             self.nonterm_offset[nt] = len(self.productions)
             self.productions += [(nt.name, prod) for prod in nt.productions]
 
-        # Build grammar first sets
         self.__build_first_sets()
 
-    def first(self, x):
+    def first_set(self, x):
         result = set()
 
         if isinstance(x, str):
@@ -91,7 +90,7 @@ class Grammar:
         else:
             skippable_symbols = 0
             for sym in x:
-                fs = self.first(sym)
+                fs = self.first_set(sym)
                 result.update(fs - {None})
                 if None in fs:
                     skippable_symbols += 1

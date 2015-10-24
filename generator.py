@@ -1,3 +1,4 @@
+from grammar import *
 from parsing import *
 
 
@@ -117,17 +118,18 @@ def main():
     print('Grammar symbols:', gr.symbols, '\n')
 
     for sym in gr.symbols:
-        print('First(%s):' % repr(sym), gr.first(sym))
+        print('First(%s):' % repr(sym), gr.first_set(sym))
     print('')
 
-    dfa = LrZero.get_automaton(gr)
+    dfa = lr_zero.get_automaton(gr)
 
     print('LR(0) canonical collection with', len(dfa.states), 'states')
-    for itemSet in dfa.states:
-        print('State', dfa.id_from_state[itemSet], 'with %d item(s)' % len(itemSet), '->', repr(itemSet))
+    for item_set in dfa.states:
+        print('State %s with %d item(s) -> %s' %
+              (dfa.id_from_state[item_set], len(item_set), repr(item_set)))
     print('Goto Table:', dfa.goto, '\n')
 
-    col = LalrOne.get_canonical_collection(gr)
+    col = lalr_one.get_canonical_collection(gr)
     # id_from_state = {col[i]:i for i in range(len(col))}
 
     print('LARL(1) canonical collection with', len(col), 'states')
