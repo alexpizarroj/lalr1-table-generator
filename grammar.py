@@ -22,7 +22,8 @@ class NonTerminal:
         else:
             separator = ' | '
 
-        strprod = lambda prod: ' '.join(str(sym) for sym in prod)
+        def strprod(prod):
+            return ' '.join(str(sym) for sym in prod)
 
         rules = separator.join(strprod(prod) for prod in self.productions)
 
