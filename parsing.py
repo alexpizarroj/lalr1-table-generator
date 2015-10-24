@@ -10,12 +10,12 @@ class LALR1:
       return '{ propagatesTo: %s, lookaheads: %s }' % (repr(self.propagatesTo), repr(self.lookaheads))
   
   @staticmethod
-  def buildAutomaton(gr):
+  def getCanonicalCollection(gr):
     # Algorithm 4.63 (Dragonbook, page 272)
     
     # STEP 1
     # ======
-    dfa = LR0.buildAutomaton(gr)
+    dfa = LR0.getAutomaton(gr)
     kstates = [LR0.kernels(st) for st in dfa.states]
     
     # STEPS 2, 3
@@ -69,21 +69,30 @@ class LALR1:
             if jLookaheadsLen < len(jCell.lookaheads):
               repeat = True
     
-    # Pretty print to debug the table
+    '''
+    # Pretty print the table to debug
     # ===============================
-    def printTable(table):
-      print('TABLE')
-      for i in range(len(table)):
-        print('State', i)
-        for item, cell in table[i].items():
-          print('\tItem', item, '->', str(cell))
-    printTable(table)
+    print('TABLE')
+    for i in range(len(table)):
+      print('State', i)
+      for item, cell in table[i].items():
+        print('\tItem', item, '->', str(cell))
+    '''
     
-    # Automaton Build
-    # ===============
-    pass
+    # Build the collection
+    # ====================
+    result = [set() for i in range(len(table))]
     
-    return table
+    for iStateId in range(len(table)):
+      # Add kernel items
+      for iItem, iCell in table[iStateId].items():
+        for sym in iCell.lookaheads:
+          itemSet = (iItem, sym)
+          result[iStateId].add(itemSet)
+      # Add non-kernel kernel items
+      result[iStateId] = LALR1.closure(gr, result[iStateId])
+    
+    return result
   
   @staticmethod
   def closure(gr, itemSet):
@@ -122,7 +131,7 @@ class LR0:
       self.goto = dict()
   
   @staticmethod
-  def buildAutomaton(gr):
+  def getAutomaton(gr):
     dfa = LR0.Automaton()
     dfa.states = [LR0.closure(gr, [(0, 0)])]
     nextId = 0

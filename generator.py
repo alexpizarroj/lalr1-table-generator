@@ -67,6 +67,7 @@ def getSample1():
   return Grammar(nonterms)
 
 def getSample2():
+  # From http://web.cs.dal.ca/~sjackson/lalr1.html
   nonterms = []  
   nonterms += [Nonterm('N', [
     "V '=' E", "E"
@@ -81,6 +82,7 @@ def getSample2():
 
 
 def getSample3():
+  # From Dragonbook, page 271, example 4.61
   nonterms = []  
   nonterms += [Nonterm('S', [
     "L '=' R", "R"
@@ -96,7 +98,7 @@ def getSample3():
 # --------------------------------------------------------------------------------------------------
 
 def main():
-  gr = getSample3()
+  gr = getSample2()
   
   print(gr)
   print('Grammar total productions:', len(gr.productions))
@@ -106,14 +108,14 @@ def main():
     print('First(%s): ' % repr(sym), gr.first(sym))
   print('')
   
-  dfa = LR0.buildAutomaton(gr)
+  dfa = LR0.getAutomaton(gr)
   print(len(dfa.states), 'states in the canonical LR0 collection')
   for itemSet in dfa.states:
     print('State', dfa.idFromState[itemSet], 'with %d item(s)' % len(itemSet), '->', repr(itemSet))
   print('Goto Table:', dfa.goto, '\n')
   
-  dfa2 = LALR1.buildAutomaton(gr)
-  #print(dfa2)
+  dfa2 = LALR1.getCanonicalCollection(gr)
+  print(dfa2)
 
 if __name__ == "__main__":
   main()
