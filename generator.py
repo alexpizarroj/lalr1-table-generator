@@ -1,108 +1,119 @@
-from ds import *
-from grammars import *
-# --------------------------------------------------------------------------------------------------
+from grammar import *
+from parsing import *
 
-def getLalrOneAutomaton(gr):
-  dfa = getLrZeroAutomaton(gr)
-  kSet = [lr0Kernels(st) for st in dfa.states]
-  return kSet
+def getSample1():
+  nonterms = []
+  nonterms += [Nonterm('program', [
+    "class_list"
+  ])]
+  nonterms += [Nonterm('class_list', [
+    "class", "class_list class"
+  ])]
+  nonterms += [Nonterm('class', [
+    "CLASS TYPEID '{' opt_feature_list '}' ';'",
+    "CLASS TYPEID INHERITS TYPEID '{' opt_feature_list '}' ';'"
+  ])]
+  nonterms += [Nonterm('feature', [
+    "OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr '}' ';'",
+    "OBJECTID ':' TYPEID ASSIGN expr ';'",
+    "OBJECTID ':' TYPEID ';'"
+  ])]
+  nonterms += [Nonterm('feature_list', [
+    "feature", "feature_list feature"
+  ])]
+  nonterms += [Nonterm('opt_feature_list', [
+    "feature_list", ""
+  ])]
+  nonterms += [Nonterm('formal', [
+    "OBJECTID ':' TYPEID"
+  ])]
+  nonterms += [Nonterm('formal_list', [
+    "formal",
+    "formal_list ',' formal"
+  ])]
+  nonterms += [Nonterm('opt_formal_list', [
+    "formal_list", ""
+  ])]
+  nonterms += [Nonterm('expr', [
+    "BOOL_CONST", "STR_CONST", "INT_CONST", "OBJECTID", "'(' expr ')'",
+    "NOT expr", "expr '=' expr", "expr LE expr", "expr '<' expr", "'~' expr",
+    "expr '/' expr", "expr '*' expr", "expr '-' expr", "expr '+' expr", "ISVOID expr",
+    "NEW TYPEID", "CASE expr OF branch_list ESAC", "'{' block_expr_list '}'",
+    "WHILE expr LOOP expr POOL", "IF expr THEN expr ELSE expr FI",
+    "OBJECTID '(' opt_dispatch_expr_list ')'",
+    "expr '.' OBJECTID '(' opt_dispatch_expr_list ')'",
+    "expr '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'",
+    "OBJECTID ASSIGN expr", "LET let_expr_tail"
+  ])]
+  nonterms += [Nonterm('branch', [
+    "OBJECTID ':' TYPEID DARROW expr ';'"
+  ])]
+  nonterms += [Nonterm('branch_list', [
+    "branch", "branch_list branch"
+  ])]
+  nonterms += [Nonterm('block_expr_list', [
+    "expr ';'", "block_expr_list expr ';'"
+  ])]
+  nonterms += [Nonterm('dispatch_expr_list', [
+    "expr", "dispatch_expr_list ',' expr"
+  ])]
+  nonterms += [Nonterm('opt_dispatch_expr_list', [
+    "dispatch_expr_list", ""
+  ])]
+  nonterms += [Nonterm('let_expr_tail', [
+    "OBJECTID ':' TYPEID IN expr", "OBJECTID ':' TYPEID ASSIGN expr IN expr",
+    "OBJECTID ':' TYPEID ',' let_expr_tail", "OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail"
+  ])]
+  return Grammar(nonterms)
 
-def getLrZeroAutomaton(gr):
-  dfa = LrZeroAutomaton()
-  dfa.states = [lr0Closure(gr, [(0, 0)])]
-  nextId = 0
-  
-  dfa.idFromState[dfa.states[-1]] = nextId
-  nextId += 1
-  
-  seen = set(dfa.states)
-  setQueue = dfa.states
-  while len(setQueue) > 0:
-    newElements = []
-    for itemSet in setQueue:
-      itemSetId = dfa.idFromState[itemSet]
-      
-      for symbol in gr.symbols:
-        nextItemSet = lr0Goto(gr, itemSet, symbol)
-        if len(nextItemSet) == 0:
-          continue
-        
-        if nextItemSet not in seen:
-          newElements += [nextItemSet]
-          seen.add(nextItemSet)
-          
-          dfa.states += [nextItemSet]
-          dfa.idFromState[dfa.states[-1]] = nextId
-          nextId += 1
-        
-        dfa.goto[(itemSetId, symbol)] = dfa.idFromState[nextItemSet]
-    
-    setQueue = newElements
-  
-  return dfa
+def getSample2():
+  nonterms = []  
+  nonterms += [Nonterm('N', [
+    "V '=' E", "E"
+  ])]
+  nonterms += [Nonterm('E', [
+    "V"
+  ])]
+  nonterms += [Nonterm('V', [
+    "'x'", "'*' E"
+  ])]
+  return Grammar(nonterms)
 
-def lr0Closure(gr, items):
-  result = set(items)
-  current = result
-  
-  while True:
-    newElements = []
-    
-    for i, j in current:
-      pname, pbody = gr.productions[i]
-      if j < len(pbody) and isinstance(pbody[j], Nonterm):
-        nt = pbody[j]
-        ntOffset = gr.nontermOffset[nt.name]
-        for k in range(len(nt.productions)):
-          a, b = (ntOffset + k, 0)
-          if not (a, b) in result:
-            newElements += [(a, b)]
-    
-    if len(newElements) == 0:
-      break
-    
-    current = set(newElements)
-    result |= current
-  
-  return frozenset(result)
 
-def lr0Goto(gr, items, inp):
-  kitems = set()
-  
-  for x, y in items:
-    pname, pbody = gr.productions[x]
-    if y < len(pbody) and pbody[y] == inp:
-      kitems.add((x, y + 1))
-  
-  return lr0Closure(gr, kitems)
+def getSample3():
+  nonterms = []  
+  nonterms += [Nonterm('S', [
+    "L '=' R", "R"
+  ])]
+  nonterms += [Nonterm('L', [
+    "'*' R", "ID"
+  ])]
+  nonterms += [Nonterm('R', [
+    "L"
+  ])]
+  return Grammar(nonterms)
 
-def lr0Kernels(itemSet):
-  return frozenset([(x, y) for x, y in itemSet if y > 0 or x == 0])
-  
 # --------------------------------------------------------------------------------------------------
 
 def main():
-  gr = getExampleGrammar1() # getCoolGrammar()
+  gr = getSample3()
   
+  print(gr)
   print('Grammar total productions:', len(gr.productions))
-  print('Grammar symbols:', gr.symbols)
-  print('Grammar:\n')
-  print(str(gr) + '\n')
-
+  print('Grammar symbols:', gr.symbols, '\n')
+  
   for sym in gr.symbols:
     print('First(%s): ' % repr(sym), gr.first(sym))
   print('')
   
-  dfa = getLrZeroAutomaton(gr)
+  dfa = LR0.buildAutomaton(gr)
   print(len(dfa.states), 'states in the canonical LR0 collection')
   for itemSet in dfa.states:
     print('State', dfa.idFromState[itemSet], 'with %d item(s)' % len(itemSet), '->', repr(itemSet))
   print('Goto Table:', dfa.goto, '\n')
   
-  # dfa2 = getLalrOneAutomaton(gr)
-  # print(dfa2)
-# --------------------------------------------------------------------------------------------------
+  dfa2 = LALR1.buildAutomaton(gr)
+  print(dfa2)
 
 if __name__ == "__main__":
   main()
-  

@@ -39,7 +39,7 @@ class Grammar:
       startNonterm = nonterms[0]
     
     # Non-terminals and their productions
-    self.nonterms = [Nonterm('$accept', [[startNonterm.name, '$end']])] + nonterms
+    self.nonterms = [Nonterm('$accept', [[startNonterm.name]])] + nonterms
     # List of terminals of the grammar (the set will be turned into a list later on)
     self.terminals = set()
     # List of symbols of the grammar
@@ -75,14 +75,13 @@ class Grammar:
     
     # List all the productions
     for nt in self.nonterms:
-      self.nontermOffset[nt.name] = len(self.productions)
+      self.nontermOffset[nt] = len(self.productions)
       for prod in nt.productions:
         self.productions += [(nt.name, prod)]
     
     # Self-explanatory
     self.__buildFirstSets()
     
-  
   def __buildFirstSets(self):
     # Build First Sets iteratively (see Dragon Book, page 221)
     self.__firstSets = {}
@@ -121,34 +120,28 @@ class Grammar:
     output = ''
     addEndl = False
     for nt in self.nonterms:
-      output += ('\n\n' if addEndl else '') + str(nt)
+      output += ('\n' if addEndl else '') + str(nt)
       addEndl = True
     return output
   
   def first(self, x):
-    if (isinstance(x, str) or isinstance(x, Nonterm)):
-      return self.__firstSets[x]
-    
     res = set()
-    skippable_symbols = 0
     
-    for sym in x:
-      fs = self.__firstSets[sym]
-      res.update(fs - set([None]))
-      if None in fs:
-        skippable_symbols += 1
-      else:
-        break
-    
-    if skippable_symbols == len(x):
-      res.add(None)
+    if isinstance(x, str):
+      res.add(x)
+    elif isinstance(x, Nonterm):
+      res = self.__firstSets[x]
+    else:
+      skippable_symbols = 0
+      for sym in x:
+        fs = self.first(sym)
+        res.update(fs - set([None]))
+        if None in fs:
+          skippable_symbols += 1
+        else:
+          break
+      
+      if skippable_symbols == len(x):
+        res.add(None)
     
     return res
-
-class LrZeroAutomaton:
-  def __init__(self):
-    """TO DO: Add documentation
-    """
-    self.states = []
-    self.idFromState = dict()
-    self.goto = dict()
