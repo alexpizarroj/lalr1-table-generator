@@ -129,7 +129,7 @@ def print_lalr_one_canonical_col(canonical_col):
 
 
 def main():
-    gr = get_sample_3()
+    gr = get_sample_2()
 
     print(gr)
     print('Grammar total productions:', len(gr.productions))
@@ -142,8 +142,12 @@ def main():
     # print_lalr_one_canonical_col(canonical_col)
     # print()
 
+    print('Working on parsing table...')
     parsing_table = lalr_one.ParsingTable(gr)
-    print(parsing_table.stringify())
+    print('Finished!\n')
+
+    table = parsing_table.stringify()
+    print(table)
 
 if __name__ == "__main__":
     main()

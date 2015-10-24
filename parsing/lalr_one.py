@@ -84,25 +84,36 @@ class ParsingTable:
     def __drop_lalr_one_itemset_lookaheads(itemset):
         return frozenset((x[0], x[1]) for x, y in itemset)
 
+    @staticmethod
+    def __stringify_action_entries(term, ent):
+        return '\tfor terminal %s: ' % term + \
+               ', '.join('%s %s' % (kind, str(arg)) for kind, arg in ent)
+
+    @staticmethod
+    def __stringify_goto_entry(nt, sid):
+            return '\tfor non-terminal %s: go to state %d' % (repr(nt), sid)
+
+    def __stringify_state(self, state_id):
+        state_title = 'State #%d\n' % state_id
+
+        action_str = '\n'.join(self.__stringify_action_entries(t, e) for t, e
+                               in self.action[state_id].items() if len(e) > 0)
+        if len(action_str) > 0:
+            action_str += '\n'
+
+        goto_str = '\n'.join(self.__stringify_goto_entry(nt, sid) for nt, sid
+                             in self.goto[state_id].items() if sid is not None)
+        if len(goto_str) > 0:
+            goto_str += '\n'
+
+        return state_title + action_str + goto_str
+
     def stringify(self):
-        result = 'PARSING TABLE\n'
-        for state_id in range(self.n_states):
-            result += ('\n' if state_id > 0 else '')
-            result += 'State #%d\n' % state_id
+        table_title = 'PARSING TABLE\n'
 
-            for terminal, entries in self.action[state_id].items():
-                if len(entries) == 0:
-                    continue
-                result += '\tfor terminal %s: ' % terminal
-                result += ','.join('%s %s' % (kind, str(arg)) for kind, arg in entries)
-                result += '\n'
+        states_str = '\n'.join(self.__stringify_state(i) for i in range(self.n_states))
 
-            for nt, next_state_id in self.goto[state_id].items():
-                if next_state_id is None:
-                    continue
-                result += '\tfor non-terminal %s: go to state %d\n' % (repr(nt), next_state_id)
-
-        return result
+        return table_title + states_str
 
 
 class LrZeroItemTableEntry:

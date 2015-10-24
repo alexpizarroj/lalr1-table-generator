@@ -1,0 +1,59 @@
+0     $accept: program
+1     program: class_list
+2     class_list: class
+3               | class_list class
+4     class: CLASS TYPEID '{' opt_feature_list '}' ';'
+5          | CLASS TYPEID INHERITS TYPEID '{' opt_feature_list '}' ';'
+6     feature: OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr '}' ';'
+7            | OBJECTID ':' TYPEID ASSIGN expr ';'
+8            | OBJECTID ':' TYPEID ';'
+9     feature_list: feature
+10                | feature_list feature
+11    opt_feature_list: feature_list
+12                    | 
+13    formal: OBJECTID ':' TYPEID
+14    formal_list: formal
+15               | formal_list ',' formal
+16    opt_formal_list: formal_list
+17                   | 
+18    expr: BOOL_CONST
+19        | STR_CONST
+20        | INT_CONST
+21        | OBJECTID
+22        | '(' expr ')'
+23        | NOT expr
+24        | expr '=' expr
+25        | expr LE expr
+26        | expr '<' expr
+27        | '~' expr
+28        | expr '/' expr
+29        | expr '*' expr
+30        | expr '-' expr
+31        | expr '+' expr
+32        | ISVOID expr
+33        | NEW TYPEID
+34        | CASE expr OF branch_list ESAC
+35        | '{' block_expr_list '}'
+36        | WHILE expr LOOP expr POOL
+37        | IF expr THEN expr ELSE expr FI
+38        | OBJECTID '(' opt_dispatch_expr_list ')'
+39        | expr '.' OBJECTID '(' opt_dispatch_expr_list ')'
+40        | expr '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+41        | OBJECTID ASSIGN expr
+42        | LET let_expr_tail
+43    branch: OBJECTID ':' TYPEID DARROW expr ';'
+44    branch_list: branch
+45               | branch_list branch
+46    block_expr_list: expr ';'
+47                   | block_expr_list expr ';'
+48    dispatch_expr_list: expr
+49                      | dispatch_expr_list ',' expr
+50    opt_dispatch_expr_list: dispatch_expr_list
+51                          | 
+52    let_expr_tail: OBJECTID ':' TYPEID IN expr
+53                 | OBJECTID ':' TYPEID ASSIGN expr IN expr
+54                 | OBJECTID ':' TYPEID ',' let_expr_tail
+55                 | OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail
+Grammar total productions: 56
+Grammar symbols: [$accept, block_expr_list, branch, branch_list, class, class_list, dispatch_expr_list, expr, feature, feature_list, formal, formal_list, let_expr_tail, opt_dispatch_expr_list, opt_feature_list, opt_formal_list, program, "'('", "')'", "'*'", "'+'", "','", "'-'", "'.'", "'/'", "':'", "';'", "'<'", "'='", "'@'", "'{'", "'}'", "'~'", 'ASSIGN', 'BOOL_CONST', 'CASE', 'CLASS', 'DARROW', 'ELSE', 'ESAC', 'FI', 'IF', 'IN', 'INHERITS', 'INT_CONST', 'ISVOID', 'LE', 'LET', 'LOOP', 'NEW', 'NOT', 'OBJECTID', 'OF', 'POOL', 'STR_CONST', 'THEN', 'TYPEID', 'WHILE'] 
+
