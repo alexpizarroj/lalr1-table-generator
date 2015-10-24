@@ -1,15 +1,89 @@
 from grammar import *
 
 class LALR1:
+  class LrZeroKernelItem:
+    def __init__(self):
+      self.propagatesTo = set()
+      self.lookaheads = set()
+    
+    def __repr__(self):
+      return '{ propagatesTo: %s, lookaheads: %s }' % (repr(self.propagatesTo), repr(self.lookaheads))
+  
   @staticmethod
   def buildAutomaton(gr):
+    # Algorithm 4.63 (Dragonbook, page 272)
+    
+    # STEP 1
+    # ======
     dfa = LR0.buildAutomaton(gr)
-    kSet = [LR0.kernels(st) for st in dfa.states]
+    kstates = [LR0.kernels(st) for st in dfa.states]
     
-    k0 = [((0, 0), '#')]
-    i0 = LALR1.closure(gr, k0)
+    # STEPS 2, 3
+    # ==========
+    table = [{item: LALR1.LrZeroKernelItem() for item in kstates[i]} for i in range(len(kstates))]
+    table[0][(0, 0)].lookaheads.add(Grammar.endOfInput())
     
-    return i0
+    for iState in range(len(kstates)):
+      stateSymbols = [x[1] for x, y in dfa.goto.items() if x[0] == iState]
+      #print('For state', iState, 'we have symbols', stateSymbols)
+      
+      for iItem in kstates[iState]:
+        J = LALR1.closure(gr, [(iItem, Grammar.freeSymbol())])
+        #print('\titem', iItem, 'closure', J)
+        
+        for sym in stateSymbols:
+          jState = dfa.goto[(iState, sym)]
+          
+          # For each item in J whose . (dot) points to a symbol equal to 'sym'
+          # i.e. a production expecting to see 'sym' next
+          for ((prodIndex, dot), nextSymbol) in J:
+            pname, pbody = gr.productions[prodIndex]
+            if dot == len(pbody) or pbody[dot] != sym:
+              continue
+            
+            jItem = (prodIndex, dot + 1)
+            #print('\t\titem', jItem, 'state', jState, 'nextSymbol', nextSymbol)
+            
+            if nextSymbol == Grammar.freeSymbol():
+              # Conclude that lookaheads propagate from iItem to jItem in jState
+              table[iState][iItem].propagatesTo.add((jState, jItem))
+            else:
+              # Conclude that lookahead 'nextSymbol' is spontaneous for jItem in jState
+              table[jState][jItem].lookaheads.add(nextSymbol)
+    
+    # STEP 4
+    # ======
+    repeat = True
+    while repeat:
+      repeat = False
+      # For every item set, kernel item
+      for iStateId in range(len(table)):
+        for iItem, iCell in table[iStateId].items():
+          # For every kernel item iItem's lookaheads propagate to
+          for jStateId, jItem in iCell.propagatesTo:
+            # Do propagate the lookaheads
+            jCell = table[jStateId][jItem]
+            jLookaheadsLen = len(jCell.lookaheads)
+            jCell.lookaheads.update(iCell.lookaheads)
+            # Check if they changed, so we can decide whether to iterate again
+            if jLookaheadsLen < len(jCell.lookaheads):
+              repeat = True
+    
+    # Pretty print to debug the table
+    # ===============================
+    def printTable(table):
+      print('TABLE')
+      for i in range(len(table)):
+        print('State', i)
+        for item, cell in table[i].items():
+          print('\tItem', item, '->', str(cell))
+    printTable(table)
+    
+    # Automaton Build
+    # ===============
+    pass
+    
+    return table
   
   @staticmethod
   def closure(gr, itemSet):
@@ -43,8 +117,6 @@ class LALR1:
 class LR0:
   class Automaton:
     def __init__(self):
-      """TO DO: Add documentation
-      """
       self.states = []
       self.idFromState = dict()
       self.goto = dict()

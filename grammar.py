@@ -145,3 +145,11 @@ class Grammar:
         res.add(None)
     
     return res
+  
+  @staticmethod
+  def endOfInput():
+    return '$end'
+  
+  @staticmethod
+  def freeSymbol():
+    return '$#'

@@ -113,7 +113,7 @@ def main():
   print('Goto Table:', dfa.goto, '\n')
   
   dfa2 = LALR1.buildAutomaton(gr)
-  print(dfa2)
+  #print(dfa2)
 
 if __name__ == "__main__":
   main()
