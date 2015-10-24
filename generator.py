@@ -129,7 +129,7 @@ def print_lalr_one_canonical_col(canonical_col):
 
 
 def main():
-    gr = get_sample_4()
+    gr = get_sample_3()
 
     print(gr)
     print('Grammar total productions:', len(gr.productions))

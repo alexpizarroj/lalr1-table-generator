@@ -138,8 +138,14 @@ class Grammar:
         # Freeze the sets
         self.__first_sets = {x: frozenset(y) for x, y in self.__first_sets.items()}
 
+    def stringify(self, indexes=True):
+        lines = '\n'.join(nt.stringify() for nt in self.nonterms)
+        if indexes:
+            lines = '\n'.join('%-6d%s' % (x, y) for x, y in enumerate(lines.split('\n')))
+        return lines
+
     def __str__(self):
-        return '\n'.join(nt.stringify() for nt in self.nonterms)
+        return self.stringify()
 
     @staticmethod
     def start():
