@@ -1,4 +1,4 @@
-from grammar import *
+from parsing.grammar import *
 from parsing import *
 
 
@@ -151,4 +151,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

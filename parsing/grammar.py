@@ -37,7 +37,7 @@ class Grammar:
             start_nonterminal = nonterms[0]
 
         # List of non-terminals
-        self.nonterms = [NonTerminal(Grammar.start(), [[start_nonterminal.name]])] + nonterms
+        self.nonterms = [NonTerminal(START_SYMBOL, [[start_nonterminal.name]])] + nonterms
         # List of terminals
         self.terminals = []
         # List of symbols (non-terminals + terminals)
@@ -148,14 +148,7 @@ class Grammar:
     def __str__(self):
         return self.stringify()
 
-    @staticmethod
-    def start():
-        return '$accept'
 
-    @staticmethod
-    def end_of_input():
-        return '$end'
-
-    @staticmethod
-    def free_symbol():
-        return '$#'
+START_SYMBOL = '$accept'
+EOF_SYMBOL = '$end'
+FREE_SYMBOL = '$#'

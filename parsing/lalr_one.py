@@ -1,11 +1,12 @@
 import parsing.lr_zero as lr_zero
+import parsing.grammar as grammar
 
 
 class ParsingTable:
     def __init__(self, gr):
-        # Taken from the grammar directly
-        self.terminals = [] # gr.end_of_input() will be added to 'terminals'
-        self.nonterms = []  # gr.start() will be removed from 'nonterms'
+        # Taken from the grammar
+        self.terminals = []  # = set(gr.terminals) + {grammar.EOF_SYMBOL}
+        self.nonterms = []   # = set(gr.nonterms) - {grammar.START_SYMBOL}
 
         # Taken from the cardinality of the LALR(1) canonical collection
         self.n_states = 0
@@ -32,8 +33,8 @@ class ParsingTable:
         self.__setup_from_grammar(gr)
 
     def __setup_from_grammar(self, gr):
-        self.terminals = gr.terminals + [gr.end_of_input()]
-        self.nonterms = gr.nonterms[1:]  # Ignore the first non-terminal, Grammar.start()
+        self.terminals = gr.terminals + [grammar.EOF_SYMBOL]
+        self.nonterms = gr.nonterms[1:]  # Ignore the first non-terminal: grammar.START_SYMBOL
 
         ccol = tuple(get_canonical_collection(gr))
         self.n_states = len(ccol)
@@ -66,8 +67,8 @@ class ParsingTable:
                 else:
                     if prod_index == 0:
                         # We are dealing with an item of the artificial starting symbol
-                        assert(next_symbol == gr.end_of_input())
-                        self.action[state_id][gr.end_of_input()].add(('accept', ''))
+                        assert(next_symbol == grammar.EOF_SYMBOL)
+                        self.action[state_id][grammar.EOF_SYMBOL].add(('accept', ''))
                     else:
                         # We are dealing with a regular non-terminal
                         self.action[state_id][next_symbol].add(('reduce', prod_index))
@@ -138,13 +139,13 @@ def get_canonical_collection(gr):
     # STEPS 2, 3
     # ==========
     table = [{item: LrZeroItemTableEntry() for item in kstates[i]} for i in range(n_states)]
-    table[0][(0, 0)].lookaheads.add(gr.end_of_input())
+    table[0][(0, 0)].lookaheads.add(grammar.EOF_SYMBOL)
 
     for i_state_id in range(n_states):
         state_symbols = [x[1] for x, y in dfa.goto.items() if x[0] == i_state_id]
 
         for i_item in kstates[i_state_id]:
-            closure_set = closure(gr, [(i_item, gr.free_symbol())])
+            closure_set = closure(gr, [(i_item, grammar.FREE_SYMBOL)])
 
             for sym in state_symbols:
                 j_state_id = dfa.goto[(i_state_id, sym)]
@@ -157,7 +158,7 @@ def get_canonical_collection(gr):
                         continue
 
                     j_item = (prod_index, dot + 1)
-                    if next_symbol == gr.free_symbol():
+                    if next_symbol == grammar.FREE_SYMBOL:
                         table[i_state_id][i_item].propagates_to.add((j_state_id, j_item))
                     else:
                         table[j_state_id][j_item].lookaheads.add(next_symbol)
