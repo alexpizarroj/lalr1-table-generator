@@ -5,10 +5,11 @@ import parsing.grammar as grammar
 class ParsingTable:
     def __init__(self, gr):
         self.grammar = gr
-        self.terminals = []  # = set(gr.terminals) + {grammar.EOF_SYMBOL}
-        self.nonterms = []   # = set(gr.nonterms) - {grammar.START_SYMBOL}
 
-        self.__ccol = []
+        self.terminals = ()  # terminals of 'gr', union grammar.EOF_SYMBOL
+        self.nonterms = ()   # non-terminals of 'gr', except grammar.START_SYMBOL
+
+        self.__ccol = ()
         self.n_states = 0  # Taken from the cardinality of the LALR(1) canonical collection
 
         # goto will be a list of dictionaries in order to easy its usage:
@@ -28,14 +29,14 @@ class ParsingTable:
         #
         # See Dragonbook, page 265, "Canonical LR(1) parsing tables" for reference.
 
-        self.goto = []
-        self.action = []
+        self.goto = ()
+        self.action = ()
 
-        self.__setup_from_grammar(gr)
+        self.__setup_from_grammar(self.grammar)
 
     def __setup_from_grammar(self, gr):
-        self.terminals = gr.terminals + [grammar.EOF_SYMBOL]
-        self.nonterms = gr.nonterms[1:]  # Ignore the first non-terminal: grammar.START_SYMBOL
+        self.terminals = gr.terminals + tuple([grammar.EOF_SYMBOL])
+        self.nonterms = gr.nonterms[1:]
 
         self.__ccol = tuple(get_canonical_collection(gr))
         self.n_states = len(self.__ccol)
@@ -43,11 +44,11 @@ class ParsingTable:
         ccol_core = tuple(drop_itemset_lookaheads(x) for x in self.__ccol)
         id_from_core = {ccol_core[i]: i for i in range(len(self.__ccol))}
 
-        self.goto = [{x: None for x in self.nonterms} for i in range(self.n_states)]
-        self.action = [{x: set() for x in self.terminals} for i in range(self.n_states)]
+        self.goto = tuple({x: None for x in self.nonterms} for i in range(self.n_states))
+        self.action = tuple({x: set() for x in self.terminals} for i in range(self.n_states))
 
         # Precalculation of goto values to improve performance
-        goto_precalc = [dict() for i in range(self.n_states)]
+        goto_precalc = tuple(dict() for i in range(self.n_states))
         for symbol in (self.terminals + self.nonterms):
             for state_id in range(self.n_states):
                 next_state = goto(gr, self.__ccol[state_id], symbol)
@@ -90,7 +91,7 @@ class ParsingTable:
 
     @staticmethod
     def __stringify_goto_entry(nt, sid):
-            return '\tfor non-terminal %s: go to state %d' % (repr(nt), sid)
+            return '\tfor non-terminal %s: go to state %d' % (str(nt), sid)
 
     def __stringify_lr_zero_item(self, item):
         prod_index, dot = item

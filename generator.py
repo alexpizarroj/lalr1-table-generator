@@ -12,11 +12,11 @@ def describe_grammar(gr):
     print()
 
     print('Grammar non-terminals (%d in total):' % len(gr.nonterms))
-    print('\n'.join('\t' + str(s) for s in gr.symbols if isinstance(s, grammar.NonTerminal)))
+    print('\n'.join('\t' + str(s) for s in gr.nonterms))
     print()
 
     print('Grammar terminals (%d in total):' % len(gr.terminals))
-    print('\n'.join('\t' + str(s) for s in gr.symbols if isinstance(s, str)))
+    print('\n'.join('\t' + str(s) for s in gr.terminals))
 
 
 def main():

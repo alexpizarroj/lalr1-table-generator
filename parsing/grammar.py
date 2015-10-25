@@ -14,6 +14,9 @@ class NonTerminal:
         self.productions = [(x.split() if isinstance(x, str) else x) for x in productions]
 
     def __repr__(self):
+        return 'NonTerminal(' + repr(self.name) + ')'
+
+    def __str__(self):
         return self.name
 
     def stringify(self, pretty=True):
@@ -33,28 +36,27 @@ class NonTerminal:
 
 
 class Grammar:
-    def __init__(self, nonterms, start_nonterminal = None):
+    def __init__(self, nonterms, start_nonterminal=None):
         # Grammar start symbol
         if start_nonterminal is None or start_nonterminal not in nonterms:
             start_nonterminal = nonterms[0]
 
-        # List of non-terminals
-        self.nonterms = [NonTerminal(START_SYMBOL, [[start_nonterminal.name]])] + nonterms
-        # List of terminals
-        self.terminals = []
-        # List of symbols (non-terminals + terminals)
-        self.symbols = []
+        # Tuple of non-terminals
+        self.nonterms = tuple([NonTerminal(START_SYMBOL, [[start_nonterminal.name]])] +
+                              sorted(nonterms, key=lambda elem: elem.name))
+        # Tuple of terminals
+        self.terminals = ()
+        # Tuple of symbols (non-terminals + terminals)
+        self.symbols = ()
+        # Tuple of enumerated NT's productions
+        self.productions = ()
         # Enumeration offset for a given NT
-        self.nonterm_offset = dict()
-        # Enumerated NT's productions
-        self.productions = []
+        self.nonterm_offset = {}
         # First sets for every grammar symbol
         self.__first_sets = {}
 
-        # Update the reference of each production and, while at it, recognize terminal symbols
+        # Update the references of each production and, while at it, recognize terminal symbols
         nonterminal_by_name = {nt.name: nt for nt in self.nonterms}
-        self.symbols += sorted([x for x in self.nonterms], key=lambda nt: nt.name)
-
         for nt in self.nonterms:
             for prod in nt.productions:
                 for idx in range(len(prod)):
@@ -64,7 +66,7 @@ class Grammar:
                         if symbol in nonterminal_by_name:
                             prod[idx] = nonterminal_by_name[symbol]
                         else:
-                            self.terminals.append(symbol)
+                            self.terminals += tuple([symbol])
                     elif isinstance(symbol, NonTerminal):
                         if symbol not in self.nonterms:
                             msg = 'Non-terminal %s is not in the grammar' % repr(symbol)
@@ -73,13 +75,13 @@ class Grammar:
                         msg = "Unsupported type '%s' inside of production" % type(symbol).__name__
                         raise TypeError(msg)
 
-        self.terminals = sorted(list(set(self.terminals)))
-        self.symbols += self.terminals
+        self.terminals = tuple(sorted(set(self.terminals)))
+        self.symbols = self.nonterms + self.terminals
 
         # Enumerate grammar productions
         for nt in self.nonterms:
             self.nonterm_offset[nt] = len(self.productions)
-            self.productions += [(nt.name, prod) for prod in nt.productions]
+            self.productions += tuple((nt.name, prod) for prod in nt.productions)
 
         self.__build_first_sets()
 
@@ -103,7 +105,7 @@ class Grammar:
             if skippable_symbols == len(x):
                 result.add(None)
 
-        return result
+        return frozenset(result)
 
     def __build_first_sets(self):
         #  Starting First sets values
