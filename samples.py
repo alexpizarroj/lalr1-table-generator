@@ -59,6 +59,7 @@ def get_sample_4():
 
 
 def get_sample_5():
+    # Random grammar with a moderate amount of states
     return Grammar([
         NonTerminal('p', [
             "tit ss"
@@ -81,66 +82,69 @@ def get_sample_5():
 
 
 def get_sample_6():
-    nonterms = []
-    nonterms += [NonTerminal('program', [
-        "class_list"
-    ])]
-    nonterms += [NonTerminal('class_list', [
-        "class", "class_list class"
-    ])]
-    nonterms += [NonTerminal('class', [
-        "CLASS TYPEID '{' opt_feature_list '}' ';'",
-        "CLASS TYPEID INHERITS TYPEID '{' opt_feature_list '}' ';'"
-    ])]
-    nonterms += [NonTerminal('feature', [
-        "OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr '}' ';'",
-        "OBJECTID ':' TYPEID ASSIGN expr ';'",
-        "OBJECTID ':' TYPEID ';'"
-    ])]
-    nonterms += [NonTerminal('feature_list', [
-        "feature", "feature_list feature"
-    ])]
-    nonterms += [NonTerminal('opt_feature_list', [
-        "feature_list", ""
-    ])]
-    nonterms += [NonTerminal('formal', [
-        "OBJECTID ':' TYPEID"
-    ])]
-    nonterms += [NonTerminal('formal_list', [
-        "formal",
-        "formal_list ',' formal"
-    ])]
-    nonterms += [NonTerminal('opt_formal_list', [
-        "formal_list", ""
-    ])]
-    nonterms += [NonTerminal('expr', [
-        "BOOL_CONST", "STR_CONST", "INT_CONST", "OBJECTID", "'(' expr ')'",
-        "NOT expr", "expr '=' expr", "expr LE expr", "expr '<' expr", "'~' expr",
-        "expr '/' expr", "expr '*' expr", "expr '-' expr", "expr '+' expr", "ISVOID expr",
-        "NEW TYPEID", "CASE expr OF branch_list ESAC", "'{' block_expr_list '}'",
-        "WHILE expr LOOP expr POOL", "IF expr THEN expr ELSE expr FI",
-        "OBJECTID '(' opt_dispatch_expr_list ')'",
-        "expr '.' OBJECTID '(' opt_dispatch_expr_list ')'",
-        "expr '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'",
-        "OBJECTID ASSIGN expr", "LET let_expr_tail"
-    ])]
-    nonterms += [NonTerminal('branch', [
-        "OBJECTID ':' TYPEID DARROW expr ';'"
-    ])]
-    nonterms += [NonTerminal('branch_list', [
-        "branch", "branch_list branch"
-    ])]
-    nonterms += [NonTerminal('block_expr_list', [
-        "expr ';'", "block_expr_list expr ';'"
-    ])]
-    nonterms += [NonTerminal('dispatch_expr_list', [
-        "expr", "dispatch_expr_list ',' expr"
-    ])]
-    nonterms += [NonTerminal('opt_dispatch_expr_list', [
-        "dispatch_expr_list", ""
-    ])]
-    nonterms += [NonTerminal('let_expr_tail', [
-        "OBJECTID ':' TYPEID IN expr", "OBJECTID ':' TYPEID ASSIGN expr IN expr",
-        "OBJECTID ':' TYPEID ',' let_expr_tail", "OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail"
-    ])]
-    return Grammar(nonterms)
+    # Sample ambiguous grammar for the Alex Aiken's COOL programming language
+    return Grammar([
+        NonTerminal('program', [
+            "class_list"
+        ]),
+        NonTerminal('class_list', [
+            "class", "class_list class"
+        ]),
+        NonTerminal('class', [
+            "CLASS TYPEID '{' opt_feature_list '}' ';'",
+            "CLASS TYPEID INHERITS TYPEID '{' opt_feature_list '}' ';'"
+        ]),
+        NonTerminal('feature', [
+            "OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr '}' ';'",
+            "OBJECTID ':' TYPEID ASSIGN expr ';'",
+            "OBJECTID ':' TYPEID ';'"
+        ]),
+        NonTerminal('feature_list', [
+            "feature", "feature_list feature"
+        ]),
+        NonTerminal('opt_feature_list', [
+            "feature_list", ""
+        ]),
+        NonTerminal('formal', [
+            "OBJECTID ':' TYPEID"
+        ]),
+        NonTerminal('formal_list', [
+            "formal",
+            "formal_list ',' formal"
+        ]),
+        NonTerminal('opt_formal_list', [
+            "formal_list", ""
+        ]),
+        NonTerminal('expr', [
+            "BOOL_CONST", "STR_CONST", "INT_CONST", "OBJECTID", "'(' expr ')'",
+            "NOT expr", "expr '=' expr", "expr LE expr", "expr '<' expr", "'~' expr",
+            "expr '/' expr", "expr '*' expr", "expr '-' expr", "expr '+' expr", "ISVOID expr",
+            "NEW TYPEID", "CASE expr OF branch_list ESAC", "'{' block_expr_list '}'",
+            "WHILE expr LOOP expr POOL", "IF expr THEN expr ELSE expr FI",
+            "OBJECTID '(' opt_dispatch_expr_list ')'",
+            "expr '.' OBJECTID '(' opt_dispatch_expr_list ')'",
+            "expr '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'",
+            "OBJECTID ASSIGN expr", "LET let_expr_tail"
+        ]),
+        NonTerminal('branch', [
+            "OBJECTID ':' TYPEID DARROW expr ';'"
+        ]),
+        NonTerminal('branch_list', [
+            "branch", "branch_list branch"
+        ]),
+        NonTerminal('block_expr_list', [
+            "expr ';'", "block_expr_list expr ';'"
+        ]),
+        NonTerminal('dispatch_expr_list', [
+            "expr", "dispatch_expr_list ',' expr"
+        ]),
+        NonTerminal('opt_dispatch_expr_list', [
+            "dispatch_expr_list", ""
+        ]),
+        NonTerminal('let_expr_tail', [
+            "OBJECTID ':' TYPEID IN expr",
+            "OBJECTID ':' TYPEID ASSIGN expr IN expr",
+            "OBJECTID ':' TYPEID ',' let_expr_tail",
+            "OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail"
+        ])
+    ])
