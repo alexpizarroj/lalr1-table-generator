@@ -126,7 +126,7 @@ class ParsingTable:
 
     def is_lalr_one(self):
         seq = [self.get_state_status(i) for i in range(self.n_states)]
-        return STATUS_OK if len(seq) == 0 else max(seq)
+        return (STATUS_OK if len(seq) == 0 else max(seq)) == STATUS_OK
 
 
 class LrZeroItemTableEntry:
