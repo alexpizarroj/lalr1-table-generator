@@ -1,13 +1,15 @@
 class NonTerminal:
     def __init__(self, name, productions):
-        """Represents a set of grammar productions for a non-terminal.
-
-        Keyword arguments:
-        name -- the left hand side of the set of nonterms, a.k.a. the name of the non terminal
-        productions -- a list with elements which should be either:
-          1. a list of objects of type NTerm or type str. The str elements represent grammar symbols.
-          2. a str with space-separated words. These words represent grammar symbols (T and NT)
-        """
+        # Creates an instance of a NonTerminal that represents a set of
+        # grammar productions for a non-terminal.
+        #
+        # Keyword arguments:
+        # name -- the name of the non-terminal
+        # productions -- a list whose elements can be:
+        #   1. Lists of objects of type NTerm or str.
+        #      The str elements represent terminal grammar symbols.
+        #   2. a str with space-separated words. These words represent grammar symbols (T and NT)
+        #
         self.name = name
         self.productions = [(x.split() if isinstance(x, str) else x) for x in productions]
 

@@ -8,8 +8,8 @@ class ParsingTable:
         self.terminals = []  # = set(gr.terminals) + {grammar.EOF_SYMBOL}
         self.nonterms = []   # = set(gr.nonterms) - {grammar.START_SYMBOL}
 
-        # Taken from the cardinality of the LALR(1) canonical collection
-        self.n_states = 0
+        self.__ccol = []
+        self.n_states = 0  # Taken from the cardinality of the LALR(1) canonical collection
 
         # goto will be a list of dictionaries in order to easy its usage:
         #   goto[state_id][nonterminal]
@@ -20,10 +20,11 @@ class ParsingTable:
         #   action[state_id][terminal]
         # Each dictionary will map a terminal to a set of "table entries".
         # The type of a table entry varies according to the kind of entry:
-        #   a "shift #state_id" entry           is a 2-tuple ('shift', state_id)
-        #   a "reduce #production_index" entry  is a 2-tuple ('reduce', production_index)
-        #   an "accept" entry                   is just a 2-tuple ('accept', '')
-        #   an "error" entry                    is represented by an empty set
+        #   a "shift #state_id" entry     is a 2-tuple ('shift and go to state', state_id)
+        #   a "reduce #prod_index" entry  is a 2-tuple ('reduce using rule', prod_index)
+        #   an "accept" entry             is just a 2-tuple ('accept', '')
+        # As a special case: an "error" entry is detoned just by the empty set of table
+        # entries.
         #
         # See Dragonbook, page 265, "Canonical LR(1) parsing tables" for reference.
 
@@ -36,34 +37,37 @@ class ParsingTable:
         self.terminals = gr.terminals + [grammar.EOF_SYMBOL]
         self.nonterms = gr.nonterms[1:]  # Ignore the first non-terminal: grammar.START_SYMBOL
 
-        ccol = tuple(get_canonical_collection(gr))
-        self.n_states = len(ccol)
+        self.__ccol = tuple(get_canonical_collection(gr))
+        self.n_states = len(self.__ccol)
 
-        ccol_core = tuple(self.__drop_lalr_one_itemset_lookaheads(x) for x in ccol)
-        id_from_core = {ccol_core[i]: i for i in range(len(ccol))}
-
-        def id_from_lr_one_state(itemset):
-            return id_from_core[self.__drop_lalr_one_itemset_lookaheads(itemset)]
+        ccol_core = tuple(self.__drop_lalr_one_itemset_lookaheads(x) for x in self.__ccol)
+        id_from_core = {ccol_core[i]: i for i in range(len(self.__ccol))}
 
         self.goto = [{x: None for x in self.nonterms} for i in range(self.n_states)]
         self.action = [{x: set() for x in self.terminals} for i in range(self.n_states)]
 
+        # Precalculation of goto values to improve performance
+        goto_precalc = [dict() for i in range(self.n_states)]
+        for symbol in (self.terminals + self.nonterms):
+            for state_id in range(self.n_states):
+                next_state = goto(gr, self.__ccol[state_id], symbol)
+                if len(next_state) == 0:
+                    continue
+                next_state_id = id_from_core[self.__drop_lalr_one_itemset_lookaheads(next_state)]
+                goto_precalc[state_id][symbol] = next_state_id
+
         for state_id in range(self.n_states):
-            for item, next_symbol in ccol[state_id]:
+            for item, next_symbol in self.__ccol[state_id]:
                 prod_index, dot = item
                 pname, pbody = gr.productions[prod_index]
 
                 if dot < len(pbody):
                     terminal = pbody[dot]
-                    if not isinstance(terminal, str):
+                    if not isinstance(terminal, str) or terminal not in goto_precalc[state_id]:
                         continue
 
-                    next_state = goto(gr, ccol[state_id], terminal)
-                    if len(next_state) == 0:
-                        continue
-                    next_state_id = id_from_lr_one_state(next_state)
-
-                    self.action[state_id][terminal].add(('shift', next_state_id))
+                    next_state_id = goto_precalc[state_id][terminal]
+                    self.action[state_id][terminal].add(('shift and go to state', next_state_id))
                 else:
                     if prod_index == 0:
                         # We are dealing with an item of the artificial starting symbol
@@ -71,14 +75,12 @@ class ParsingTable:
                         self.action[state_id][grammar.EOF_SYMBOL].add(('accept', ''))
                     else:
                         # We are dealing with a regular non-terminal
-                        self.action[state_id][next_symbol].add(('reduce', prod_index))
+                        self.action[state_id][next_symbol].add(('reduce using rule', prod_index))
 
             for nt in self.nonterms:
-                next_state = goto(gr, ccol[state_id], nt)
-                if len(next_state) == 0:
+                if nt not in goto_precalc[state_id]:
                     continue
-
-                next_state_id = id_from_lr_one_state(next_state)
+                next_state_id = goto_precalc[state_id][nt]
                 self.goto[state_id][nt] = next_state_id
 
     @staticmethod
@@ -103,13 +105,12 @@ class ParsingTable:
                              in self.goto[state_id].items() if sid is not None)
         goto_str += ('\n' if len(goto_str) > 0 else '')
 
-        state_title = 'State #%d\n' % state_id
+        state_title = 'State %d\n' % state_id
         return state_title + action_str + goto_str
 
     def stringify(self):
-        table_title = 'PARSING TABLE\n'
         states_str = '\n'.join(self.__stringify_state(i) for i in range(self.n_states))
-        return table_title + states_str
+        return states_str
 
     @staticmethod
     def __get_entry_status(e):
@@ -120,10 +121,12 @@ class ParsingTable:
         return STATUS_SR_CONFLICT if n_actions == 2 else STATUS_RR_CONFLICT
 
     def get_state_status(self, state_id):
-        return max(self.__get_entry_status(e) for t, e in self.action[state_id].items())
+        seq = [self.__get_entry_status(e) for t, e in self.action[state_id].items()]
+        return STATUS_OK if len(seq) == 0 else max(seq)
 
     def is_lalr_one(self):
-        return max(self.get_state_status(i) for i in range(self.n_states)) == STATUS_OK
+        seq = [self.get_state_status(i) for i in range(self.n_states)]
+        return STATUS_OK if len(seq) == 0 else max(seq)
 
 
 class LrZeroItemTableEntry:
@@ -247,6 +250,10 @@ def goto(gr, item_set, inp):
 
     result_set = closure(gr, result_set)
     return result_set
+
+
+def kernels(item_set):
+    return frozenset((item, nextsym) for item, nextsym in item_set if item[1] > 0 or item[0] == 0)
 
 
 STATUS_OK = 0
