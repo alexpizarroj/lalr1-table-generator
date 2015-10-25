@@ -4,7 +4,7 @@ import parsing.grammar as grammar
 
 class ParsingTable:
     def __init__(self, gr):
-        # Taken from the grammar
+        self.grammar = gr
         self.terminals = []  # = set(gr.terminals) + {grammar.EOF_SYMBOL}
         self.nonterms = []   # = set(gr.nonterms) - {grammar.START_SYMBOL}
 
@@ -40,7 +40,7 @@ class ParsingTable:
         self.__ccol = tuple(get_canonical_collection(gr))
         self.n_states = len(self.__ccol)
 
-        ccol_core = tuple(self.__drop_lalr_one_itemset_lookaheads(x) for x in self.__ccol)
+        ccol_core = tuple(drop_itemset_lookaheads(x) for x in self.__ccol)
         id_from_core = {ccol_core[i]: i for i in range(len(self.__ccol))}
 
         self.goto = [{x: None for x in self.nonterms} for i in range(self.n_states)]
@@ -53,7 +53,7 @@ class ParsingTable:
                 next_state = goto(gr, self.__ccol[state_id], symbol)
                 if len(next_state) == 0:
                     continue
-                next_state_id = id_from_core[self.__drop_lalr_one_itemset_lookaheads(next_state)]
+                next_state_id = id_from_core[drop_itemset_lookaheads(next_state)]
                 goto_precalc[state_id][symbol] = next_state_id
 
         for state_id in range(self.n_states):
@@ -84,10 +84,6 @@ class ParsingTable:
                 self.goto[state_id][nt] = next_state_id
 
     @staticmethod
-    def __drop_lalr_one_itemset_lookaheads(itemset):
-        return frozenset((x[0], x[1]) for x, y in itemset)
-
-    @staticmethod
     def __stringify_action_entries(term, ent):
         return '\tfor terminal %s: ' % term + \
                ', '.join('%s %s' % (kind, str(arg)) for kind, arg in ent)
@@ -96,7 +92,26 @@ class ParsingTable:
     def __stringify_goto_entry(nt, sid):
             return '\tfor non-terminal %s: go to state %d' % (repr(nt), sid)
 
+    def __stringify_lr_zero_item(self, item):
+        prod_index, dot = item
+
+        pname, pbody = self.grammar.productions[prod_index]
+
+        dotted_pbody = pbody[:dot] + ['.'] + pbody[dot:]
+
+        dotted_pbody_str = ' '.join(str(x) for x in dotted_pbody)
+
+        return grammar.RULE_INDEXING_PATTERN % (prod_index, pname + ': ' + dotted_pbody_str)
+
     def __stringify_state(self, state_id):
+        state_title = 'State %d\n' % state_id
+
+        state_items = drop_itemset_lookaheads(kernels(self.__ccol[state_id]))
+        state_items = sorted(state_items, key=lambda elem: elem[0])
+
+        items_str = '\n'.join('\t' + self.__stringify_lr_zero_item(item)
+                              for item in state_items) + '\n\n'
+
         action_str = '\n'.join(self.__stringify_action_entries(t, e) for t, e
                                in self.action[state_id].items() if len(e) > 0)
         action_str += ('\n' if len(action_str) > 0 else '')
@@ -105,8 +120,7 @@ class ParsingTable:
                              in self.goto[state_id].items() if sid is not None)
         goto_str += ('\n' if len(goto_str) > 0 else '')
 
-        state_title = 'State %d\n' % state_id
-        return state_title + action_str + goto_str
+        return state_title + items_str + action_str + goto_str
 
     def stringify(self):
         states_str = '\n'.join(self.__stringify_state(i) for i in range(self.n_states))
@@ -254,6 +268,10 @@ def goto(gr, item_set, inp):
 
 def kernels(item_set):
     return frozenset((item, nextsym) for item, nextsym in item_set if item[1] > 0 or item[0] == 0)
+
+
+def drop_itemset_lookaheads(itemset):
+    return frozenset((x[0], x[1]) for x, y in itemset)
 
 
 STATUS_OK = 0

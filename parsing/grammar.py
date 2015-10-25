@@ -144,13 +144,15 @@ class Grammar:
     def stringify(self, indexes=True):
         lines = '\n'.join(nt.stringify() for nt in self.nonterms)
         if indexes:
-            lines = '\n'.join('%-6d%s' % (x, y) for x, y in enumerate(lines.split('\n')))
+            lines = '\n'.join(RULE_INDEXING_PATTERN % (x, y)
+                              for x, y in enumerate(lines.split('\n')))
         return lines
 
     def __str__(self):
         return self.stringify()
 
 
+RULE_INDEXING_PATTERN = '%-5d%s'
 START_SYMBOL = '$accept'
 EOF_SYMBOL = '$end'
 FREE_SYMBOL = '$#'
