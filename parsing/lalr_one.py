@@ -121,7 +121,9 @@ class ParsingTable:
                              in self.goto[state_id].items() if sid is not None)
         goto_str += ('\n' if len(goto_str) > 0 else '')
 
-        return state_title + items_str + action_str + goto_str
+        action_goto_separator = ('\n' if len(action_str) > 0 and len(goto_str) > 0 else '')
+
+        return state_title + items_str + action_str + action_goto_separator + goto_str
 
     def stringify(self):
         states_str = '\n'.join(self.__stringify_state(i) for i in range(self.n_states))
