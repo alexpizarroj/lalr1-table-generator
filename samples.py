@@ -2,6 +2,48 @@ from parsing.grammar import *
 
 
 def get_sample_1():
+    # From http://web.cs.dal.ca/~sjackson/lalr1.html
+    nonterms = []
+    nonterms += [NonTerminal('N', [
+        "V '=' E", "E"
+    ])]
+    nonterms += [NonTerminal('E', [
+        "V"
+    ])]
+    nonterms += [NonTerminal('V', [
+        "'x'", "'*' E"
+    ])]
+    return Grammar(nonterms)
+
+
+def get_sample_2():
+    # From Dragonbook, page 271, example 4.61
+    nonterms = []
+    nonterms += [NonTerminal('S', [
+        "L '=' R", "R"
+    ])]
+    nonterms += [NonTerminal('L', [
+        "'*' R", "ID"
+    ])]
+    nonterms += [NonTerminal('R', [
+        "L"
+    ])]
+    return Grammar(nonterms)
+
+
+def get_sample_3():
+    # From Dragonbook, page 263, grammar 4.55 below example 4.54
+    nonterms = []
+    nonterms += [NonTerminal('S', [
+        "C C"
+    ])]
+    nonterms += [NonTerminal('C', [
+        "'c' C", "'d'"
+    ])]
+    return Grammar(nonterms)
+
+
+def get_sample_4():
     nonterms = []
     nonterms += [NonTerminal('program', [
         "class_list"
@@ -63,47 +105,5 @@ def get_sample_1():
     nonterms += [NonTerminal('let_expr_tail', [
         "OBJECTID ':' TYPEID IN expr", "OBJECTID ':' TYPEID ASSIGN expr IN expr",
         "OBJECTID ':' TYPEID ',' let_expr_tail", "OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail"
-    ])]
-    return Grammar(nonterms)
-
-
-def get_sample_2():
-    # From http://web.cs.dal.ca/~sjackson/lalr1.html
-    nonterms = []
-    nonterms += [NonTerminal('N', [
-        "V '=' E", "E"
-    ])]
-    nonterms += [NonTerminal('E', [
-        "V"
-    ])]
-    nonterms += [NonTerminal('V', [
-        "'x'", "'*' E"
-    ])]
-    return Grammar(nonterms)
-
-
-def get_sample_3():
-    # From Dragonbook, page 271, example 4.61
-    nonterms = []
-    nonterms += [NonTerminal('S', [
-        "L '=' R", "R"
-    ])]
-    nonterms += [NonTerminal('L', [
-        "'*' R", "ID"
-    ])]
-    nonterms += [NonTerminal('R', [
-        "L"
-    ])]
-    return Grammar(nonterms)
-
-
-def get_sample_4():
-    # From Dragonbook, page 263, grammar 4.55 below example 4.54
-    nonterms = []
-    nonterms += [NonTerminal('S', [
-        "C C"
-    ])]
-    nonterms += [NonTerminal('C', [
-        "'c' C", "'d'"
     ])]
     return Grammar(nonterms)
