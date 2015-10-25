@@ -56,3 +56,30 @@ def get_sample_4():
         "'c'"
     ])]
     return Grammar(nonterms)
+
+
+def get_sample_5():
+    nonterms = []
+
+    nonterms += [NonTerminal('p', [
+        "tit ss"
+    ])]
+
+    nonterms += [NonTerminal('tit', [
+        "TITLE TEXT '\n'"
+    ])]
+
+    nonterms += [NonTerminal('ss', [
+        "s ss", "s"
+    ])]
+
+    nonterms += [NonTerminal('s', [
+        "NOTE LEFT OF TEXT ':' TEXT '\n'",
+        "TEXT '->' TEXT ':' TEXT '\n'",
+        "LOOP TEXT '\n' ss END '\n'",
+        "LOOP TEXT '\n' END '\n'",
+        "ALT TEXT '\n' ss ELSE '\n' ss END '\n'",
+        "ALT TEXT '\n' ss END '\n'"
+    ])]
+
+    return Grammar(nonterms)

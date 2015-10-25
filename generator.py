@@ -3,7 +3,7 @@ import samples
 
 
 def get_grammar():
-    return samples.get_sample_1()
+    return samples.get_sample_5()
 
 
 def main():
