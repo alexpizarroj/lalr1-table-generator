@@ -19,6 +19,20 @@ def main():
 
     table = parsing_table.stringify()
     print(table)
+    print('')
+
+    gr_is_lalr_one = parsing_table.is_lalr_one()
+    state_status = [parsing_table.get_state_status(i) for i in range(parsing_table.n_states)]
+
+    print('SUMMARY')
+    print('Is the given grammar LALR(1)? %s' % ('Yes' if gr_is_lalr_one else 'No'))
+    for state_id in range(parsing_table.n_states):
+        if state_status[state_id] == lalr_one.STATUS_OK:
+            continue
+        status_str = ('shift-reduce' if state_status[state_id] == lalr_one.STATUS_SR_CONFLICT
+                      else 'reduce-reduce')
+        print('State %d has a %s conflict' % (state_id, status_str))
+
 
 if __name__ == "__main__":
     main()

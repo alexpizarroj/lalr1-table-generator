@@ -95,26 +95,35 @@ class ParsingTable:
             return '\tfor non-terminal %s: go to state %d' % (repr(nt), sid)
 
     def __stringify_state(self, state_id):
-        state_title = 'State #%d\n' % state_id
-
         action_str = '\n'.join(self.__stringify_action_entries(t, e) for t, e
                                in self.action[state_id].items() if len(e) > 0)
-        if len(action_str) > 0:
-            action_str += '\n'
+        action_str += ('\n' if len(action_str) > 0 else '')
 
         goto_str = '\n'.join(self.__stringify_goto_entry(nt, sid) for nt, sid
                              in self.goto[state_id].items() if sid is not None)
-        if len(goto_str) > 0:
-            goto_str += '\n'
+        goto_str += ('\n' if len(goto_str) > 0 else '')
 
+        state_title = 'State #%d\n' % state_id
         return state_title + action_str + goto_str
 
     def stringify(self):
         table_title = 'PARSING TABLE\n'
-
         states_str = '\n'.join(self.__stringify_state(i) for i in range(self.n_states))
-
         return table_title + states_str
+
+    @staticmethod
+    def __get_entry_status(e):
+        if len(e) <= 1:
+            return STATUS_OK
+
+        n_actions = len(frozenset(x for x, y in e))
+        return STATUS_SR_CONFLICT if n_actions == 2 else STATUS_RR_CONFLICT
+
+    def get_state_status(self, state_id):
+        return max(self.__get_entry_status(e) for t, e in self.action[state_id].items())
+
+    def is_lalr_one(self):
+        return max(self.get_state_status(i) for i in range(self.n_states)) == STATUS_OK
 
 
 class LrZeroItemTableEntry:
@@ -238,3 +247,8 @@ def goto(gr, item_set, inp):
 
     result_set = closure(gr, result_set)
     return result_set
+
+
+STATUS_OK = 0
+STATUS_SR_CONFLICT = 1
+STATUS_RR_CONFLICT = 2
