@@ -104,29 +104,32 @@ class ParsingTable:
 
         return grammar.RULE_INDEXING_PATTERN % (prod_index, pname + ': ' + dotted_pbody_str)
 
-    def __stringify_state(self, state_id):
+    def stringify_state(self, state_id):
         state_title = 'State %d\n' % state_id
 
-        state_items = drop_itemset_lookaheads(kernels(self.__ccol[state_id]))
-        state_items = sorted(state_items, key=lambda elem: elem[0])
+        items = drop_itemset_lookaheads(kernels(self.__ccol[state_id]))
+        items = sorted(items, key=lambda elem: elem[0])
 
-        items_str = '\n'.join('\t' + self.__stringify_lr_zero_item(item)
-                              for item in state_items) + '\n\n'
+        items_str = '\n'.join('\t' + self.__stringify_lr_zero_item(item) for item in items) + '\n\n'
 
-        action_str = '\n'.join(self.__stringify_action_entries(t, e) for t, e
-                               in self.action[state_id].items() if len(e) > 0)
-        action_str += ('\n' if len(action_str) > 0 else '')
+        actions = [(t, e) for t, e in self.action[state_id].items() if len(e) > 0]
+        actions = sorted(actions, key=lambda elem: elem[0])
 
-        goto_str = '\n'.join(self.__stringify_goto_entry(nt, sid) for nt, sid
-                             in self.goto[state_id].items() if sid is not None)
-        goto_str += ('\n' if len(goto_str) > 0 else '')
+        actions_str = '\n'.join(self.__stringify_action_entries(t, e) for t, e in actions)
+        actions_str += ('\n' if len(actions_str) > 0 else '')
 
-        action_goto_separator = ('\n' if len(action_str) > 0 and len(goto_str) > 0 else '')
+        gotos = [(nt, sid) for nt, sid in self.goto[state_id].items() if sid is not None]
+        gotos = sorted(gotos, key=lambda elem: elem[0].name)
 
-        return state_title + items_str + action_str + action_goto_separator + goto_str
+        gotos_str = '\n'.join(self.__stringify_goto_entry(nt, sid) for nt, sid in gotos)
+        gotos_str += ('\n' if len(gotos_str) > 0 else '')
+
+        action_goto_separator = ('\n' if len(actions_str) > 0 and len(gotos_str) > 0 else '')
+
+        return state_title + items_str + actions_str + action_goto_separator + gotos_str
 
     def stringify(self):
-        states_str = '\n'.join(self.__stringify_state(i) for i in range(self.n_states))
+        states_str = '\n'.join(self.stringify_state(i) for i in range(self.n_states))
         return states_str
 
     @staticmethod
@@ -137,12 +140,15 @@ class ParsingTable:
         n_actions = len(frozenset(x for x, y in e))
         return STATUS_SR_CONFLICT if n_actions == 2 else STATUS_RR_CONFLICT
 
-    def get_state_status(self, state_id):
+    def get_single_state_conflict_status(self, state_id):
         seq = [self.__get_entry_status(e) for t, e in self.action[state_id].items()]
         return STATUS_OK if len(seq) == 0 else max(seq)
 
+    def get_conflict_status(self):
+        return [self.get_single_state_conflict_status(i) for i in range(self.n_states)]
+
     def is_lalr_one(self):
-        seq = [self.get_state_status(i) for i in range(self.n_states)]
+        seq = self.get_conflict_status()
         return (STATUS_OK if len(seq) == 0 else max(seq)) == STATUS_OK
 
 

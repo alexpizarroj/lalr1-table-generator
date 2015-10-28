@@ -3,7 +3,7 @@ import samples
 
 
 def get_grammar():
-    return samples.get_sample_1()
+    return samples.get_sample_6()
 
 
 def describe_grammar(gr):
@@ -19,6 +19,23 @@ def describe_grammar(gr):
     print('\n'.join('\t' + str(s) for s in gr.terminals))
 
 
+def describe_parsing_table(table):
+    print('SUMMARY')
+    print('Is the given grammar LALR(1)? %s' % ('Yes' if table.is_lalr_one() else 'No'))
+
+    conflict_status = table.get_conflict_status()
+    for state_id in range(table.n_states):
+        if conflict_status[state_id] == lalr_one.STATUS_OK:
+            continue
+
+        has_sr_conflict = (conflict_status[state_id] == lalr_one.STATUS_SR_CONFLICT)
+        status_str = ('shift-reduce' if has_sr_conflict else 'reduce-reduce')
+        print('State %d has a %s conflict' % (state_id, status_str))
+
+    print()
+    print(table.stringify())
+
+
 def main():
     gr = get_grammar()
 
@@ -26,26 +43,10 @@ def main():
 
     print()
     print('Working on parsing table... ')
-
     table = lalr_one.ParsingTable(gr)
-    table_str = table.stringify()
-    gr_is_lalr_one = table.is_lalr_one()
-    state_status = [table.get_state_status(i) for i in range(table.n_states)]
-
     print("I'm done.\n")
-    print('SUMMARY')
 
-    print('Is the given grammar LALR(1)? %s' % ('Yes' if gr_is_lalr_one else 'No'))
-
-    for state_id in range(table.n_states):
-        if state_status[state_id] == lalr_one.STATUS_OK:
-            continue
-        has_sr_conflict = (state_status[state_id] == lalr_one.STATUS_SR_CONFLICT)
-        status_str = ('shift-reduce' if has_sr_conflict else 'reduce-reduce')
-        print('State %d has a %s conflict' % (state_id, status_str))
-
-    print()
-    print(table_str)
+    describe_parsing_table(table)
 
 
 if __name__ == "__main__":
