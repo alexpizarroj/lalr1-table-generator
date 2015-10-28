@@ -1,5 +1,6 @@
 import parsing.lr_zero as lr_zero
 import parsing.grammar as grammar
+import csv
 
 
 class ParsingTable:
@@ -150,6 +151,32 @@ class ParsingTable:
     def is_lalr_one(self):
         seq = self.get_conflict_status()
         return (STATUS_OK if len(seq) == 0 else max(seq)) == STATUS_OK
+
+    def save_to_csv(self, filepath):
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, dialect='excel')
+
+            headers = tuple(' ') + self.terminals + self.nonterms
+            writer.writerow(headers)
+
+            def stringify_action_entries(entries):
+                return ', '.join(e[0].split()[0][0] + str(e[1]) for e in entries)
+
+            for state_id in range(self.n_states):
+                row = [''] * len(headers)
+                row[0] = state_id
+
+                for col in range(1, 1 + len(self.terminals)):
+                    if not headers[col] in self.action[state_id]:
+                        continue
+                    row[col] = stringify_action_entries(self.action[state_id][headers[col]])
+
+                for col in range(1 + len(self.terminals), len(headers)):
+                    if not headers[col] in self.goto[state_id]:
+                        continue
+                    row[col] = self.goto[state_id][headers[col]]
+
+                writer.writerow(row)
 
 
 class LrZeroItemTableEntry:

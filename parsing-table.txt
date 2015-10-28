@@ -1,0 +1,2353 @@
+Indexed grammar rules (56 in total):
+0    $accept: program
+1    block_expr_list: expr ';'
+2                   | block_expr_list expr ';'
+3    branch: OBJECTID ':' TYPEID DARROW expr ';'
+4    branch_list: branch
+5               | branch_list branch
+6    class: CLASS TYPEID '{' opt_feature_list '}' ';'
+7         | CLASS TYPEID INHERITS TYPEID '{' opt_feature_list '}' ';'
+8    class_list: class
+9              | class_list class
+10   dispatch_expr_list: expr
+11                     | dispatch_expr_list ',' expr
+12   expr: BOOL_CONST
+13       | STR_CONST
+14       | INT_CONST
+15       | OBJECTID
+16       | '(' expr ')'
+17       | NOT expr
+18       | expr '=' expr
+19       | expr LE expr
+20       | expr '<' expr
+21       | '~' expr
+22       | expr '/' expr
+23       | expr '*' expr
+24       | expr '-' expr
+25       | expr '+' expr
+26       | ISVOID expr
+27       | NEW TYPEID
+28       | CASE expr OF branch_list ESAC
+29       | '{' block_expr_list '}'
+30       | WHILE expr LOOP expr POOL
+31       | IF expr THEN expr ELSE expr FI
+32       | OBJECTID '(' opt_dispatch_expr_list ')'
+33       | expr '.' OBJECTID '(' opt_dispatch_expr_list ')'
+34       | expr '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+35       | OBJECTID ASSIGN expr
+36       | LET let_expr_tail
+37   feature: OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr '}' ';'
+38          | OBJECTID ':' TYPEID ASSIGN expr ';'
+39          | OBJECTID ':' TYPEID ';'
+40   feature_list: feature
+41               | feature_list feature
+42   formal: OBJECTID ':' TYPEID
+43   formal_list: formal
+44              | formal_list ',' formal
+45   let_expr_tail: OBJECTID ':' TYPEID IN expr
+46                | OBJECTID ':' TYPEID ASSIGN expr IN expr
+47                | OBJECTID ':' TYPEID ',' let_expr_tail
+48                | OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail
+49   opt_dispatch_expr_list: dispatch_expr_list
+50                         | 
+51   opt_feature_list: feature_list
+52                   | 
+53   opt_formal_list: formal_list
+54                  | 
+55   program: class_list
+
+Grammar non-terminals (17 in total):
+	$accept
+	block_expr_list
+	branch
+	branch_list
+	class
+	class_list
+	dispatch_expr_list
+	expr
+	feature
+	feature_list
+	formal
+	formal_list
+	let_expr_tail
+	opt_dispatch_expr_list
+	opt_feature_list
+	opt_formal_list
+	program
+
+Grammar terminals (41 in total):
+	'('
+	')'
+	'*'
+	'+'
+	','
+	'-'
+	'.'
+	'/'
+	':'
+	';'
+	'<'
+	'='
+	'@'
+	'{'
+	'}'
+	'~'
+	ASSIGN
+	BOOL_CONST
+	CASE
+	CLASS
+	DARROW
+	ELSE
+	ESAC
+	FI
+	IF
+	IN
+	INHERITS
+	INT_CONST
+	ISVOID
+	LE
+	LET
+	LOOP
+	NEW
+	NOT
+	OBJECTID
+	OF
+	POOL
+	STR_CONST
+	THEN
+	TYPEID
+	WHILE
+
+PARSING TABLE SUMMARY
+Is the given grammar LALR(1)? No
+State 65 has a shift-reduce conflict
+State 68 has a shift-reduce conflict
+State 72 has a shift-reduce conflict
+State 77 has a shift-reduce conflict
+State 78 has a shift-reduce conflict
+State 79 has a shift-reduce conflict
+State 81 has a shift-reduce conflict
+State 82 has a shift-reduce conflict
+State 83 has a shift-reduce conflict
+State 85 has a shift-reduce conflict
+State 96 has a shift-reduce conflict
+State 129 has a shift-reduce conflict
+State 138 has a shift-reduce conflict
+
+State 0
+	0    $accept: . program
+
+	for terminal CLASS: shift and go to state 4
+
+	for non-terminal class: go to state 1
+	for non-terminal class_list: go to state 2
+	for non-terminal program: go to state 3
+
+State 1
+	8    class_list: class .
+
+	for terminal $end: reduce using rule 8
+	for terminal CLASS: reduce using rule 8
+
+State 2
+	9    class_list: class_list . class
+	55   program: class_list .
+
+	for terminal $end: reduce using rule 55
+	for terminal CLASS: shift and go to state 4
+
+	for non-terminal class: go to state 5
+
+State 3
+	0    $accept: program .
+
+	for terminal $end: accept 
+
+State 4
+	6    class: CLASS . TYPEID '{' opt_feature_list '}' ';'
+	7    class: CLASS . TYPEID INHERITS TYPEID '{' opt_feature_list '}' ';'
+
+	for terminal TYPEID: shift and go to state 6
+
+State 5
+	9    class_list: class_list class .
+
+	for terminal $end: reduce using rule 9
+	for terminal CLASS: reduce using rule 9
+
+State 6
+	6    class: CLASS TYPEID . '{' opt_feature_list '}' ';'
+	7    class: CLASS TYPEID . INHERITS TYPEID '{' opt_feature_list '}' ';'
+
+	for terminal '{': shift and go to state 7
+	for terminal INHERITS: shift and go to state 8
+
+State 7
+	6    class: CLASS TYPEID '{' . opt_feature_list '}' ';'
+
+	for terminal '}': reduce using rule 52
+	for terminal OBJECTID: shift and go to state 12
+
+	for non-terminal feature: go to state 9
+	for non-terminal feature_list: go to state 10
+	for non-terminal opt_feature_list: go to state 11
+
+State 8
+	7    class: CLASS TYPEID INHERITS . TYPEID '{' opt_feature_list '}' ';'
+
+	for terminal TYPEID: shift and go to state 13
+
+State 9
+	40   feature_list: feature .
+
+	for terminal '}': reduce using rule 40
+	for terminal OBJECTID: reduce using rule 40
+
+State 10
+	41   feature_list: feature_list . feature
+	51   opt_feature_list: feature_list .
+
+	for terminal '}': reduce using rule 51
+	for terminal OBJECTID: shift and go to state 12
+
+	for non-terminal feature: go to state 14
+
+State 11
+	6    class: CLASS TYPEID '{' opt_feature_list . '}' ';'
+
+	for terminal '}': shift and go to state 15
+
+State 12
+	37   feature: OBJECTID . '(' opt_formal_list ')' ':' TYPEID '{' expr '}' ';'
+	38   feature: OBJECTID . ':' TYPEID ASSIGN expr ';'
+	39   feature: OBJECTID . ':' TYPEID ';'
+
+	for terminal '(': shift and go to state 16
+	for terminal ':': shift and go to state 17
+
+State 13
+	7    class: CLASS TYPEID INHERITS TYPEID . '{' opt_feature_list '}' ';'
+
+	for terminal '{': shift and go to state 18
+
+State 14
+	41   feature_list: feature_list feature .
+
+	for terminal '}': reduce using rule 41
+	for terminal OBJECTID: reduce using rule 41
+
+State 15
+	6    class: CLASS TYPEID '{' opt_feature_list '}' . ';'
+
+	for terminal ';': shift and go to state 19
+
+State 16
+	37   feature: OBJECTID '(' . opt_formal_list ')' ':' TYPEID '{' expr '}' ';'
+
+	for terminal ')': reduce using rule 54
+	for terminal OBJECTID: shift and go to state 23
+
+	for non-terminal formal: go to state 20
+	for non-terminal formal_list: go to state 21
+	for non-terminal opt_formal_list: go to state 22
+
+State 17
+	38   feature: OBJECTID ':' . TYPEID ASSIGN expr ';'
+	39   feature: OBJECTID ':' . TYPEID ';'
+
+	for terminal TYPEID: shift and go to state 24
+
+State 18
+	7    class: CLASS TYPEID INHERITS TYPEID '{' . opt_feature_list '}' ';'
+
+	for terminal '}': reduce using rule 52
+	for terminal OBJECTID: shift and go to state 12
+
+	for non-terminal feature: go to state 9
+	for non-terminal feature_list: go to state 10
+	for non-terminal opt_feature_list: go to state 25
+
+State 19
+	6    class: CLASS TYPEID '{' opt_feature_list '}' ';' .
+
+	for terminal $end: reduce using rule 6
+	for terminal CLASS: reduce using rule 6
+
+State 20
+	43   formal_list: formal .
+
+	for terminal ')': reduce using rule 43
+	for terminal ',': reduce using rule 43
+
+State 21
+	44   formal_list: formal_list . ',' formal
+	53   opt_formal_list: formal_list .
+
+	for terminal ')': reduce using rule 53
+	for terminal ',': shift and go to state 26
+
+State 22
+	37   feature: OBJECTID '(' opt_formal_list . ')' ':' TYPEID '{' expr '}' ';'
+
+	for terminal ')': shift and go to state 27
+
+State 23
+	42   formal: OBJECTID . ':' TYPEID
+
+	for terminal ':': shift and go to state 28
+
+State 24
+	38   feature: OBJECTID ':' TYPEID . ASSIGN expr ';'
+	39   feature: OBJECTID ':' TYPEID . ';'
+
+	for terminal ';': shift and go to state 29
+	for terminal ASSIGN: shift and go to state 30
+
+State 25
+	7    class: CLASS TYPEID INHERITS TYPEID '{' opt_feature_list . '}' ';'
+
+	for terminal '}': shift and go to state 31
+
+State 26
+	44   formal_list: formal_list ',' . formal
+
+	for terminal OBJECTID: shift and go to state 23
+
+	for non-terminal formal: go to state 32
+
+State 27
+	37   feature: OBJECTID '(' opt_formal_list ')' . ':' TYPEID '{' expr '}' ';'
+
+	for terminal ':': shift and go to state 33
+
+State 28
+	42   formal: OBJECTID ':' . TYPEID
+
+	for terminal TYPEID: shift and go to state 34
+
+State 29
+	39   feature: OBJECTID ':' TYPEID ';' .
+
+	for terminal '}': reduce using rule 39
+	for terminal OBJECTID: reduce using rule 39
+
+State 30
+	38   feature: OBJECTID ':' TYPEID ASSIGN . expr ';'
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 35
+
+State 31
+	7    class: CLASS TYPEID INHERITS TYPEID '{' opt_feature_list '}' . ';'
+
+	for terminal ';': shift and go to state 50
+
+State 32
+	44   formal_list: formal_list ',' formal .
+
+	for terminal ')': reduce using rule 44
+	for terminal ',': reduce using rule 44
+
+State 33
+	37   feature: OBJECTID '(' opt_formal_list ')' ':' . TYPEID '{' expr '}' ';'
+
+	for terminal TYPEID: shift and go to state 51
+
+State 34
+	42   formal: OBJECTID ':' TYPEID .
+
+	for terminal ')': reduce using rule 42
+	for terminal ',': reduce using rule 42
+
+State 35
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	38   feature: OBJECTID ':' TYPEID ASSIGN expr . ';'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal ';': shift and go to state 57
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+
+State 36
+	16   expr: '(' . expr ')'
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 62
+
+State 37
+	29   expr: '{' . block_expr_list '}'
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal block_expr_list: go to state 63
+	for non-terminal expr: go to state 64
+
+State 38
+	21   expr: '~' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 65
+
+State 39
+	12   expr: BOOL_CONST .
+
+	for terminal ')': reduce using rule 12
+	for terminal '*': reduce using rule 12
+	for terminal '+': reduce using rule 12
+	for terminal ',': reduce using rule 12
+	for terminal '-': reduce using rule 12
+	for terminal '.': reduce using rule 12
+	for terminal '/': reduce using rule 12
+	for terminal ';': reduce using rule 12
+	for terminal '<': reduce using rule 12
+	for terminal '=': reduce using rule 12
+	for terminal '@': reduce using rule 12
+	for terminal '}': reduce using rule 12
+	for terminal ELSE: reduce using rule 12
+	for terminal FI: reduce using rule 12
+	for terminal IN: reduce using rule 12
+	for terminal LE: reduce using rule 12
+	for terminal LOOP: reduce using rule 12
+	for terminal OF: reduce using rule 12
+	for terminal POOL: reduce using rule 12
+	for terminal THEN: reduce using rule 12
+
+State 40
+	28   expr: CASE . expr OF branch_list ESAC
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 66
+
+State 41
+	31   expr: IF . expr THEN expr ELSE expr FI
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 67
+
+State 42
+	14   expr: INT_CONST .
+
+	for terminal ')': reduce using rule 14
+	for terminal '*': reduce using rule 14
+	for terminal '+': reduce using rule 14
+	for terminal ',': reduce using rule 14
+	for terminal '-': reduce using rule 14
+	for terminal '.': reduce using rule 14
+	for terminal '/': reduce using rule 14
+	for terminal ';': reduce using rule 14
+	for terminal '<': reduce using rule 14
+	for terminal '=': reduce using rule 14
+	for terminal '@': reduce using rule 14
+	for terminal '}': reduce using rule 14
+	for terminal ELSE: reduce using rule 14
+	for terminal FI: reduce using rule 14
+	for terminal IN: reduce using rule 14
+	for terminal LE: reduce using rule 14
+	for terminal LOOP: reduce using rule 14
+	for terminal OF: reduce using rule 14
+	for terminal POOL: reduce using rule 14
+	for terminal THEN: reduce using rule 14
+
+State 43
+	26   expr: ISVOID . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 68
+
+State 44
+	36   expr: LET . let_expr_tail
+
+	for terminal OBJECTID: shift and go to state 70
+
+	for non-terminal let_expr_tail: go to state 69
+
+State 45
+	27   expr: NEW . TYPEID
+
+	for terminal TYPEID: shift and go to state 71
+
+State 46
+	17   expr: NOT . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 72
+
+State 47
+	15   expr: OBJECTID .
+	32   expr: OBJECTID . '(' opt_dispatch_expr_list ')'
+	35   expr: OBJECTID . ASSIGN expr
+
+	for terminal '(': shift and go to state 73
+	for terminal ')': reduce using rule 15
+	for terminal '*': reduce using rule 15
+	for terminal '+': reduce using rule 15
+	for terminal ',': reduce using rule 15
+	for terminal '-': reduce using rule 15
+	for terminal '.': reduce using rule 15
+	for terminal '/': reduce using rule 15
+	for terminal ';': reduce using rule 15
+	for terminal '<': reduce using rule 15
+	for terminal '=': reduce using rule 15
+	for terminal '@': reduce using rule 15
+	for terminal '}': reduce using rule 15
+	for terminal ASSIGN: shift and go to state 74
+	for terminal ELSE: reduce using rule 15
+	for terminal FI: reduce using rule 15
+	for terminal IN: reduce using rule 15
+	for terminal LE: reduce using rule 15
+	for terminal LOOP: reduce using rule 15
+	for terminal OF: reduce using rule 15
+	for terminal POOL: reduce using rule 15
+	for terminal THEN: reduce using rule 15
+
+State 48
+	13   expr: STR_CONST .
+
+	for terminal ')': reduce using rule 13
+	for terminal '*': reduce using rule 13
+	for terminal '+': reduce using rule 13
+	for terminal ',': reduce using rule 13
+	for terminal '-': reduce using rule 13
+	for terminal '.': reduce using rule 13
+	for terminal '/': reduce using rule 13
+	for terminal ';': reduce using rule 13
+	for terminal '<': reduce using rule 13
+	for terminal '=': reduce using rule 13
+	for terminal '@': reduce using rule 13
+	for terminal '}': reduce using rule 13
+	for terminal ELSE: reduce using rule 13
+	for terminal FI: reduce using rule 13
+	for terminal IN: reduce using rule 13
+	for terminal LE: reduce using rule 13
+	for terminal LOOP: reduce using rule 13
+	for terminal OF: reduce using rule 13
+	for terminal POOL: reduce using rule 13
+	for terminal THEN: reduce using rule 13
+
+State 49
+	30   expr: WHILE . expr LOOP expr POOL
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 75
+
+State 50
+	7    class: CLASS TYPEID INHERITS TYPEID '{' opt_feature_list '}' ';' .
+
+	for terminal $end: reduce using rule 7
+	for terminal CLASS: reduce using rule 7
+
+State 51
+	37   feature: OBJECTID '(' opt_formal_list ')' ':' TYPEID . '{' expr '}' ';'
+
+	for terminal '{': shift and go to state 76
+
+State 52
+	23   expr: expr '*' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 77
+
+State 53
+	25   expr: expr '+' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 78
+
+State 54
+	24   expr: expr '-' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 79
+
+State 55
+	33   expr: expr '.' . OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal OBJECTID: shift and go to state 80
+
+State 56
+	22   expr: expr '/' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 81
+
+State 57
+	38   feature: OBJECTID ':' TYPEID ASSIGN expr ';' .
+
+	for terminal '}': reduce using rule 38
+	for terminal OBJECTID: reduce using rule 38
+
+State 58
+	20   expr: expr '<' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 82
+
+State 59
+	18   expr: expr '=' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 83
+
+State 60
+	34   expr: expr '@' . TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal TYPEID: shift and go to state 84
+
+State 61
+	19   expr: expr LE . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 85
+
+State 62
+	16   expr: '(' expr . ')'
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': shift and go to state 86
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+
+State 63
+	2    block_expr_list: block_expr_list . expr ';'
+	29   expr: '{' block_expr_list . '}'
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '}': shift and go to state 88
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 87
+
+State 64
+	1    block_expr_list: expr . ';'
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal ';': shift and go to state 89
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+
+State 65
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	21   expr: '~' expr .
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 21
+	for terminal '*': reduce using rule 21, shift and go to state 52
+	for terminal '+': reduce using rule 21, shift and go to state 53
+	for terminal ',': reduce using rule 21
+	for terminal '-': reduce using rule 21, shift and go to state 54
+	for terminal '.': reduce using rule 21, shift and go to state 55
+	for terminal '/': shift and go to state 56, reduce using rule 21
+	for terminal ';': reduce using rule 21
+	for terminal '<': reduce using rule 21, shift and go to state 58
+	for terminal '=': reduce using rule 21, shift and go to state 59
+	for terminal '@': reduce using rule 21, shift and go to state 60
+	for terminal '}': reduce using rule 21
+	for terminal ELSE: reduce using rule 21
+	for terminal FI: reduce using rule 21
+	for terminal IN: reduce using rule 21
+	for terminal LE: reduce using rule 21, shift and go to state 61
+	for terminal LOOP: reduce using rule 21
+	for terminal OF: reduce using rule 21
+	for terminal POOL: reduce using rule 21
+	for terminal THEN: reduce using rule 21
+
+State 66
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	28   expr: CASE expr . OF branch_list ESAC
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+	for terminal OF: shift and go to state 90
+
+State 67
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	31   expr: IF expr . THEN expr ELSE expr FI
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+	for terminal THEN: shift and go to state 91
+
+State 68
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	26   expr: ISVOID expr .
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 26
+	for terminal '*': reduce using rule 26, shift and go to state 52
+	for terminal '+': reduce using rule 26, shift and go to state 53
+	for terminal ',': reduce using rule 26
+	for terminal '-': reduce using rule 26, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 26
+	for terminal '/': shift and go to state 56, reduce using rule 26
+	for terminal ';': reduce using rule 26
+	for terminal '<': reduce using rule 26, shift and go to state 58
+	for terminal '=': reduce using rule 26, shift and go to state 59
+	for terminal '@': reduce using rule 26, shift and go to state 60
+	for terminal '}': reduce using rule 26
+	for terminal ELSE: reduce using rule 26
+	for terminal FI: reduce using rule 26
+	for terminal IN: reduce using rule 26
+	for terminal LE: reduce using rule 26, shift and go to state 61
+	for terminal LOOP: reduce using rule 26
+	for terminal OF: reduce using rule 26
+	for terminal POOL: reduce using rule 26
+	for terminal THEN: reduce using rule 26
+
+State 69
+	36   expr: LET let_expr_tail .
+
+	for terminal ')': reduce using rule 36
+	for terminal '*': reduce using rule 36
+	for terminal '+': reduce using rule 36
+	for terminal ',': reduce using rule 36
+	for terminal '-': reduce using rule 36
+	for terminal '.': reduce using rule 36
+	for terminal '/': reduce using rule 36
+	for terminal ';': reduce using rule 36
+	for terminal '<': reduce using rule 36
+	for terminal '=': reduce using rule 36
+	for terminal '@': reduce using rule 36
+	for terminal '}': reduce using rule 36
+	for terminal ELSE: reduce using rule 36
+	for terminal FI: reduce using rule 36
+	for terminal IN: reduce using rule 36
+	for terminal LE: reduce using rule 36
+	for terminal LOOP: reduce using rule 36
+	for terminal OF: reduce using rule 36
+	for terminal POOL: reduce using rule 36
+	for terminal THEN: reduce using rule 36
+
+State 70
+	45   let_expr_tail: OBJECTID . ':' TYPEID IN expr
+	46   let_expr_tail: OBJECTID . ':' TYPEID ASSIGN expr IN expr
+	47   let_expr_tail: OBJECTID . ':' TYPEID ',' let_expr_tail
+	48   let_expr_tail: OBJECTID . ':' TYPEID ASSIGN expr ',' let_expr_tail
+
+	for terminal ':': shift and go to state 92
+
+State 71
+	27   expr: NEW TYPEID .
+
+	for terminal ')': reduce using rule 27
+	for terminal '*': reduce using rule 27
+	for terminal '+': reduce using rule 27
+	for terminal ',': reduce using rule 27
+	for terminal '-': reduce using rule 27
+	for terminal '.': reduce using rule 27
+	for terminal '/': reduce using rule 27
+	for terminal ';': reduce using rule 27
+	for terminal '<': reduce using rule 27
+	for terminal '=': reduce using rule 27
+	for terminal '@': reduce using rule 27
+	for terminal '}': reduce using rule 27
+	for terminal ELSE: reduce using rule 27
+	for terminal FI: reduce using rule 27
+	for terminal IN: reduce using rule 27
+	for terminal LE: reduce using rule 27
+	for terminal LOOP: reduce using rule 27
+	for terminal OF: reduce using rule 27
+	for terminal POOL: reduce using rule 27
+	for terminal THEN: reduce using rule 27
+
+State 72
+	17   expr: NOT expr .
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 17
+	for terminal '*': shift and go to state 52, reduce using rule 17
+	for terminal '+': reduce using rule 17, shift and go to state 53
+	for terminal ',': reduce using rule 17
+	for terminal '-': reduce using rule 17, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 17
+	for terminal '/': shift and go to state 56, reduce using rule 17
+	for terminal ';': reduce using rule 17
+	for terminal '<': shift and go to state 58, reduce using rule 17
+	for terminal '=': reduce using rule 17, shift and go to state 59
+	for terminal '@': shift and go to state 60, reduce using rule 17
+	for terminal '}': reduce using rule 17
+	for terminal ELSE: reduce using rule 17
+	for terminal FI: reduce using rule 17
+	for terminal IN: reduce using rule 17
+	for terminal LE: reduce using rule 17, shift and go to state 61
+	for terminal LOOP: reduce using rule 17
+	for terminal OF: reduce using rule 17
+	for terminal POOL: reduce using rule 17
+	for terminal THEN: reduce using rule 17
+
+State 73
+	32   expr: OBJECTID '(' . opt_dispatch_expr_list ')'
+
+	for terminal '(': shift and go to state 36
+	for terminal ')': reduce using rule 50
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal dispatch_expr_list: go to state 93
+	for non-terminal expr: go to state 94
+	for non-terminal opt_dispatch_expr_list: go to state 95
+
+State 74
+	35   expr: OBJECTID ASSIGN . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 96
+
+State 75
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	30   expr: WHILE expr . LOOP expr POOL
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+	for terminal LOOP: shift and go to state 97
+
+State 76
+	37   feature: OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' . expr '}' ';'
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 98
+
+State 77
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr '*' expr .
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 23
+	for terminal '*': reduce using rule 23, shift and go to state 52
+	for terminal '+': reduce using rule 23, shift and go to state 53
+	for terminal ',': reduce using rule 23
+	for terminal '-': reduce using rule 23, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 23
+	for terminal '/': shift and go to state 56, reduce using rule 23
+	for terminal ';': reduce using rule 23
+	for terminal '<': shift and go to state 58, reduce using rule 23
+	for terminal '=': reduce using rule 23, shift and go to state 59
+	for terminal '@': reduce using rule 23, shift and go to state 60
+	for terminal '}': reduce using rule 23
+	for terminal ELSE: reduce using rule 23
+	for terminal FI: reduce using rule 23
+	for terminal IN: reduce using rule 23
+	for terminal LE: reduce using rule 23, shift and go to state 61
+	for terminal LOOP: reduce using rule 23
+	for terminal OF: reduce using rule 23
+	for terminal POOL: reduce using rule 23
+	for terminal THEN: reduce using rule 23
+
+State 78
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	25   expr: expr '+' expr .
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 25
+	for terminal '*': shift and go to state 52, reduce using rule 25
+	for terminal '+': reduce using rule 25, shift and go to state 53
+	for terminal ',': reduce using rule 25
+	for terminal '-': reduce using rule 25, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 25
+	for terminal '/': shift and go to state 56, reduce using rule 25
+	for terminal ';': reduce using rule 25
+	for terminal '<': shift and go to state 58, reduce using rule 25
+	for terminal '=': reduce using rule 25, shift and go to state 59
+	for terminal '@': shift and go to state 60, reduce using rule 25
+	for terminal '}': reduce using rule 25
+	for terminal ELSE: reduce using rule 25
+	for terminal FI: reduce using rule 25
+	for terminal IN: reduce using rule 25
+	for terminal LE: reduce using rule 25, shift and go to state 61
+	for terminal LOOP: reduce using rule 25
+	for terminal OF: reduce using rule 25
+	for terminal POOL: reduce using rule 25
+	for terminal THEN: reduce using rule 25
+
+State 79
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr '-' expr .
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 24
+	for terminal '*': shift and go to state 52, reduce using rule 24
+	for terminal '+': reduce using rule 24, shift and go to state 53
+	for terminal ',': reduce using rule 24
+	for terminal '-': shift and go to state 54, reduce using rule 24
+	for terminal '.': shift and go to state 55, reduce using rule 24
+	for terminal '/': shift and go to state 56, reduce using rule 24
+	for terminal ';': reduce using rule 24
+	for terminal '<': shift and go to state 58, reduce using rule 24
+	for terminal '=': shift and go to state 59, reduce using rule 24
+	for terminal '@': shift and go to state 60, reduce using rule 24
+	for terminal '}': reduce using rule 24
+	for terminal ELSE: reduce using rule 24
+	for terminal FI: reduce using rule 24
+	for terminal IN: reduce using rule 24
+	for terminal LE: reduce using rule 24, shift and go to state 61
+	for terminal LOOP: reduce using rule 24
+	for terminal OF: reduce using rule 24
+	for terminal POOL: reduce using rule 24
+	for terminal THEN: reduce using rule 24
+
+State 80
+	33   expr: expr '.' OBJECTID . '(' opt_dispatch_expr_list ')'
+
+	for terminal '(': shift and go to state 99
+
+State 81
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr '/' expr .
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 22
+	for terminal '*': shift and go to state 52, reduce using rule 22
+	for terminal '+': reduce using rule 22, shift and go to state 53
+	for terminal ',': reduce using rule 22
+	for terminal '-': reduce using rule 22, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 22
+	for terminal '/': shift and go to state 56, reduce using rule 22
+	for terminal ';': reduce using rule 22
+	for terminal '<': shift and go to state 58, reduce using rule 22
+	for terminal '=': shift and go to state 59, reduce using rule 22
+	for terminal '@': shift and go to state 60, reduce using rule 22
+	for terminal '}': reduce using rule 22
+	for terminal ELSE: reduce using rule 22
+	for terminal FI: reduce using rule 22
+	for terminal IN: reduce using rule 22
+	for terminal LE: reduce using rule 22, shift and go to state 61
+	for terminal LOOP: reduce using rule 22
+	for terminal OF: reduce using rule 22
+	for terminal POOL: reduce using rule 22
+	for terminal THEN: reduce using rule 22
+
+State 82
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr '<' expr .
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 20
+	for terminal '*': reduce using rule 20, shift and go to state 52
+	for terminal '+': reduce using rule 20, shift and go to state 53
+	for terminal ',': reduce using rule 20
+	for terminal '-': reduce using rule 20, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 20
+	for terminal '/': shift and go to state 56, reduce using rule 20
+	for terminal ';': reduce using rule 20
+	for terminal '<': shift and go to state 58, reduce using rule 20
+	for terminal '=': reduce using rule 20, shift and go to state 59
+	for terminal '@': reduce using rule 20, shift and go to state 60
+	for terminal '}': reduce using rule 20
+	for terminal ELSE: reduce using rule 20
+	for terminal FI: reduce using rule 20
+	for terminal IN: reduce using rule 20
+	for terminal LE: reduce using rule 20, shift and go to state 61
+	for terminal LOOP: reduce using rule 20
+	for terminal OF: reduce using rule 20
+	for terminal POOL: reduce using rule 20
+	for terminal THEN: reduce using rule 20
+
+State 83
+	18   expr: expr '=' expr .
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 18
+	for terminal '*': reduce using rule 18, shift and go to state 52
+	for terminal '+': reduce using rule 18, shift and go to state 53
+	for terminal ',': reduce using rule 18
+	for terminal '-': reduce using rule 18, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 18
+	for terminal '/': shift and go to state 56, reduce using rule 18
+	for terminal ';': reduce using rule 18
+	for terminal '<': reduce using rule 18, shift and go to state 58
+	for terminal '=': reduce using rule 18, shift and go to state 59
+	for terminal '@': reduce using rule 18, shift and go to state 60
+	for terminal '}': reduce using rule 18
+	for terminal ELSE: reduce using rule 18
+	for terminal FI: reduce using rule 18
+	for terminal IN: reduce using rule 18
+	for terminal LE: reduce using rule 18, shift and go to state 61
+	for terminal LOOP: reduce using rule 18
+	for terminal OF: reduce using rule 18
+	for terminal POOL: reduce using rule 18
+	for terminal THEN: reduce using rule 18
+
+State 84
+	34   expr: expr '@' TYPEID . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '.': shift and go to state 100
+
+State 85
+	18   expr: expr . '=' expr
+	19   expr: expr LE expr .
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 19
+	for terminal '*': shift and go to state 52, reduce using rule 19
+	for terminal '+': reduce using rule 19, shift and go to state 53
+	for terminal ',': reduce using rule 19
+	for terminal '-': shift and go to state 54, reduce using rule 19
+	for terminal '.': shift and go to state 55, reduce using rule 19
+	for terminal '/': shift and go to state 56, reduce using rule 19
+	for terminal ';': reduce using rule 19
+	for terminal '<': shift and go to state 58, reduce using rule 19
+	for terminal '=': shift and go to state 59, reduce using rule 19
+	for terminal '@': shift and go to state 60, reduce using rule 19
+	for terminal '}': reduce using rule 19
+	for terminal ELSE: reduce using rule 19
+	for terminal FI: reduce using rule 19
+	for terminal IN: reduce using rule 19
+	for terminal LE: reduce using rule 19, shift and go to state 61
+	for terminal LOOP: reduce using rule 19
+	for terminal OF: reduce using rule 19
+	for terminal POOL: reduce using rule 19
+	for terminal THEN: reduce using rule 19
+
+State 86
+	16   expr: '(' expr ')' .
+
+	for terminal ')': reduce using rule 16
+	for terminal '*': reduce using rule 16
+	for terminal '+': reduce using rule 16
+	for terminal ',': reduce using rule 16
+	for terminal '-': reduce using rule 16
+	for terminal '.': reduce using rule 16
+	for terminal '/': reduce using rule 16
+	for terminal ';': reduce using rule 16
+	for terminal '<': reduce using rule 16
+	for terminal '=': reduce using rule 16
+	for terminal '@': reduce using rule 16
+	for terminal '}': reduce using rule 16
+	for terminal ELSE: reduce using rule 16
+	for terminal FI: reduce using rule 16
+	for terminal IN: reduce using rule 16
+	for terminal LE: reduce using rule 16
+	for terminal LOOP: reduce using rule 16
+	for terminal OF: reduce using rule 16
+	for terminal POOL: reduce using rule 16
+	for terminal THEN: reduce using rule 16
+
+State 87
+	2    block_expr_list: block_expr_list expr . ';'
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal ';': shift and go to state 101
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+
+State 88
+	29   expr: '{' block_expr_list '}' .
+
+	for terminal ')': reduce using rule 29
+	for terminal '*': reduce using rule 29
+	for terminal '+': reduce using rule 29
+	for terminal ',': reduce using rule 29
+	for terminal '-': reduce using rule 29
+	for terminal '.': reduce using rule 29
+	for terminal '/': reduce using rule 29
+	for terminal ';': reduce using rule 29
+	for terminal '<': reduce using rule 29
+	for terminal '=': reduce using rule 29
+	for terminal '@': reduce using rule 29
+	for terminal '}': reduce using rule 29
+	for terminal ELSE: reduce using rule 29
+	for terminal FI: reduce using rule 29
+	for terminal IN: reduce using rule 29
+	for terminal LE: reduce using rule 29
+	for terminal LOOP: reduce using rule 29
+	for terminal OF: reduce using rule 29
+	for terminal POOL: reduce using rule 29
+	for terminal THEN: reduce using rule 29
+
+State 89
+	1    block_expr_list: expr ';' .
+
+	for terminal '(': reduce using rule 1
+	for terminal '{': reduce using rule 1
+	for terminal '}': reduce using rule 1
+	for terminal '~': reduce using rule 1
+	for terminal BOOL_CONST: reduce using rule 1
+	for terminal CASE: reduce using rule 1
+	for terminal IF: reduce using rule 1
+	for terminal INT_CONST: reduce using rule 1
+	for terminal ISVOID: reduce using rule 1
+	for terminal LET: reduce using rule 1
+	for terminal NEW: reduce using rule 1
+	for terminal NOT: reduce using rule 1
+	for terminal OBJECTID: reduce using rule 1
+	for terminal STR_CONST: reduce using rule 1
+	for terminal WHILE: reduce using rule 1
+
+State 90
+	28   expr: CASE expr OF . branch_list ESAC
+
+	for terminal OBJECTID: shift and go to state 104
+
+	for non-terminal branch: go to state 102
+	for non-terminal branch_list: go to state 103
+
+State 91
+	31   expr: IF expr THEN . expr ELSE expr FI
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 105
+
+State 92
+	45   let_expr_tail: OBJECTID ':' . TYPEID IN expr
+	46   let_expr_tail: OBJECTID ':' . TYPEID ASSIGN expr IN expr
+	47   let_expr_tail: OBJECTID ':' . TYPEID ',' let_expr_tail
+	48   let_expr_tail: OBJECTID ':' . TYPEID ASSIGN expr ',' let_expr_tail
+
+	for terminal TYPEID: shift and go to state 106
+
+State 93
+	11   dispatch_expr_list: dispatch_expr_list . ',' expr
+	49   opt_dispatch_expr_list: dispatch_expr_list .
+
+	for terminal ')': reduce using rule 49
+	for terminal ',': shift and go to state 107
+
+State 94
+	10   dispatch_expr_list: expr .
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 10
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal ',': reduce using rule 10
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+
+State 95
+	32   expr: OBJECTID '(' opt_dispatch_expr_list . ')'
+
+	for terminal ')': shift and go to state 108
+
+State 96
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	35   expr: OBJECTID ASSIGN expr .
+
+	for terminal ')': reduce using rule 35
+	for terminal '*': shift and go to state 52, reduce using rule 35
+	for terminal '+': reduce using rule 35, shift and go to state 53
+	for terminal ',': reduce using rule 35
+	for terminal '-': shift and go to state 54, reduce using rule 35
+	for terminal '.': shift and go to state 55, reduce using rule 35
+	for terminal '/': shift and go to state 56, reduce using rule 35
+	for terminal ';': reduce using rule 35
+	for terminal '<': shift and go to state 58, reduce using rule 35
+	for terminal '=': shift and go to state 59, reduce using rule 35
+	for terminal '@': shift and go to state 60, reduce using rule 35
+	for terminal '}': reduce using rule 35
+	for terminal ELSE: reduce using rule 35
+	for terminal FI: reduce using rule 35
+	for terminal IN: reduce using rule 35
+	for terminal LE: reduce using rule 35, shift and go to state 61
+	for terminal LOOP: reduce using rule 35
+	for terminal OF: reduce using rule 35
+	for terminal POOL: reduce using rule 35
+	for terminal THEN: reduce using rule 35
+
+State 97
+	30   expr: WHILE expr LOOP . expr POOL
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 109
+
+State 98
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	37   feature: OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr . '}' ';'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal '}': shift and go to state 110
+	for terminal LE: shift and go to state 61
+
+State 99
+	33   expr: expr '.' OBJECTID '(' . opt_dispatch_expr_list ')'
+
+	for terminal '(': shift and go to state 36
+	for terminal ')': reduce using rule 50
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal dispatch_expr_list: go to state 93
+	for non-terminal expr: go to state 94
+	for non-terminal opt_dispatch_expr_list: go to state 111
+
+State 100
+	34   expr: expr '@' TYPEID '.' . OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal OBJECTID: shift and go to state 112
+
+State 101
+	2    block_expr_list: block_expr_list expr ';' .
+
+	for terminal '(': reduce using rule 2
+	for terminal '{': reduce using rule 2
+	for terminal '}': reduce using rule 2
+	for terminal '~': reduce using rule 2
+	for terminal BOOL_CONST: reduce using rule 2
+	for terminal CASE: reduce using rule 2
+	for terminal IF: reduce using rule 2
+	for terminal INT_CONST: reduce using rule 2
+	for terminal ISVOID: reduce using rule 2
+	for terminal LET: reduce using rule 2
+	for terminal NEW: reduce using rule 2
+	for terminal NOT: reduce using rule 2
+	for terminal OBJECTID: reduce using rule 2
+	for terminal STR_CONST: reduce using rule 2
+	for terminal WHILE: reduce using rule 2
+
+State 102
+	4    branch_list: branch .
+
+	for terminal ESAC: reduce using rule 4
+	for terminal OBJECTID: reduce using rule 4
+
+State 103
+	5    branch_list: branch_list . branch
+	28   expr: CASE expr OF branch_list . ESAC
+
+	for terminal ESAC: shift and go to state 114
+	for terminal OBJECTID: shift and go to state 104
+
+	for non-terminal branch: go to state 113
+
+State 104
+	3    branch: OBJECTID . ':' TYPEID DARROW expr ';'
+
+	for terminal ':': shift and go to state 115
+
+State 105
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	31   expr: IF expr THEN expr . ELSE expr FI
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal ELSE: shift and go to state 116
+	for terminal LE: shift and go to state 61
+
+State 106
+	45   let_expr_tail: OBJECTID ':' TYPEID . IN expr
+	46   let_expr_tail: OBJECTID ':' TYPEID . ASSIGN expr IN expr
+	47   let_expr_tail: OBJECTID ':' TYPEID . ',' let_expr_tail
+	48   let_expr_tail: OBJECTID ':' TYPEID . ASSIGN expr ',' let_expr_tail
+
+	for terminal ',': shift and go to state 117
+	for terminal ASSIGN: shift and go to state 118
+	for terminal IN: shift and go to state 119
+
+State 107
+	11   dispatch_expr_list: dispatch_expr_list ',' . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 120
+
+State 108
+	32   expr: OBJECTID '(' opt_dispatch_expr_list ')' .
+
+	for terminal ')': reduce using rule 32
+	for terminal '*': reduce using rule 32
+	for terminal '+': reduce using rule 32
+	for terminal ',': reduce using rule 32
+	for terminal '-': reduce using rule 32
+	for terminal '.': reduce using rule 32
+	for terminal '/': reduce using rule 32
+	for terminal ';': reduce using rule 32
+	for terminal '<': reduce using rule 32
+	for terminal '=': reduce using rule 32
+	for terminal '@': reduce using rule 32
+	for terminal '}': reduce using rule 32
+	for terminal ELSE: reduce using rule 32
+	for terminal FI: reduce using rule 32
+	for terminal IN: reduce using rule 32
+	for terminal LE: reduce using rule 32
+	for terminal LOOP: reduce using rule 32
+	for terminal OF: reduce using rule 32
+	for terminal POOL: reduce using rule 32
+	for terminal THEN: reduce using rule 32
+
+State 109
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	30   expr: WHILE expr LOOP expr . POOL
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+	for terminal POOL: shift and go to state 121
+
+State 110
+	37   feature: OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr '}' . ';'
+
+	for terminal ';': shift and go to state 122
+
+State 111
+	33   expr: expr '.' OBJECTID '(' opt_dispatch_expr_list . ')'
+
+	for terminal ')': shift and go to state 123
+
+State 112
+	34   expr: expr '@' TYPEID '.' OBJECTID . '(' opt_dispatch_expr_list ')'
+
+	for terminal '(': shift and go to state 124
+
+State 113
+	5    branch_list: branch_list branch .
+
+	for terminal ESAC: reduce using rule 5
+	for terminal OBJECTID: reduce using rule 5
+
+State 114
+	28   expr: CASE expr OF branch_list ESAC .
+
+	for terminal ')': reduce using rule 28
+	for terminal '*': reduce using rule 28
+	for terminal '+': reduce using rule 28
+	for terminal ',': reduce using rule 28
+	for terminal '-': reduce using rule 28
+	for terminal '.': reduce using rule 28
+	for terminal '/': reduce using rule 28
+	for terminal ';': reduce using rule 28
+	for terminal '<': reduce using rule 28
+	for terminal '=': reduce using rule 28
+	for terminal '@': reduce using rule 28
+	for terminal '}': reduce using rule 28
+	for terminal ELSE: reduce using rule 28
+	for terminal FI: reduce using rule 28
+	for terminal IN: reduce using rule 28
+	for terminal LE: reduce using rule 28
+	for terminal LOOP: reduce using rule 28
+	for terminal OF: reduce using rule 28
+	for terminal POOL: reduce using rule 28
+	for terminal THEN: reduce using rule 28
+
+State 115
+	3    branch: OBJECTID ':' . TYPEID DARROW expr ';'
+
+	for terminal TYPEID: shift and go to state 125
+
+State 116
+	31   expr: IF expr THEN expr ELSE . expr FI
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 126
+
+State 117
+	47   let_expr_tail: OBJECTID ':' TYPEID ',' . let_expr_tail
+
+	for terminal OBJECTID: shift and go to state 70
+
+	for non-terminal let_expr_tail: go to state 127
+
+State 118
+	46   let_expr_tail: OBJECTID ':' TYPEID ASSIGN . expr IN expr
+	48   let_expr_tail: OBJECTID ':' TYPEID ASSIGN . expr ',' let_expr_tail
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 128
+
+State 119
+	45   let_expr_tail: OBJECTID ':' TYPEID IN . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 129
+
+State 120
+	11   dispatch_expr_list: dispatch_expr_list ',' expr .
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal ')': reduce using rule 11
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal ',': reduce using rule 11
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+
+State 121
+	30   expr: WHILE expr LOOP expr POOL .
+
+	for terminal ')': reduce using rule 30
+	for terminal '*': reduce using rule 30
+	for terminal '+': reduce using rule 30
+	for terminal ',': reduce using rule 30
+	for terminal '-': reduce using rule 30
+	for terminal '.': reduce using rule 30
+	for terminal '/': reduce using rule 30
+	for terminal ';': reduce using rule 30
+	for terminal '<': reduce using rule 30
+	for terminal '=': reduce using rule 30
+	for terminal '@': reduce using rule 30
+	for terminal '}': reduce using rule 30
+	for terminal ELSE: reduce using rule 30
+	for terminal FI: reduce using rule 30
+	for terminal IN: reduce using rule 30
+	for terminal LE: reduce using rule 30
+	for terminal LOOP: reduce using rule 30
+	for terminal OF: reduce using rule 30
+	for terminal POOL: reduce using rule 30
+	for terminal THEN: reduce using rule 30
+
+State 122
+	37   feature: OBJECTID '(' opt_formal_list ')' ':' TYPEID '{' expr '}' ';' .
+
+	for terminal '}': reduce using rule 37
+	for terminal OBJECTID: reduce using rule 37
+
+State 123
+	33   expr: expr '.' OBJECTID '(' opt_dispatch_expr_list ')' .
+
+	for terminal ')': reduce using rule 33
+	for terminal '*': reduce using rule 33
+	for terminal '+': reduce using rule 33
+	for terminal ',': reduce using rule 33
+	for terminal '-': reduce using rule 33
+	for terminal '.': reduce using rule 33
+	for terminal '/': reduce using rule 33
+	for terminal ';': reduce using rule 33
+	for terminal '<': reduce using rule 33
+	for terminal '=': reduce using rule 33
+	for terminal '@': reduce using rule 33
+	for terminal '}': reduce using rule 33
+	for terminal ELSE: reduce using rule 33
+	for terminal FI: reduce using rule 33
+	for terminal IN: reduce using rule 33
+	for terminal LE: reduce using rule 33
+	for terminal LOOP: reduce using rule 33
+	for terminal OF: reduce using rule 33
+	for terminal POOL: reduce using rule 33
+	for terminal THEN: reduce using rule 33
+
+State 124
+	34   expr: expr '@' TYPEID '.' OBJECTID '(' . opt_dispatch_expr_list ')'
+
+	for terminal '(': shift and go to state 36
+	for terminal ')': reduce using rule 50
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal dispatch_expr_list: go to state 93
+	for non-terminal expr: go to state 94
+	for non-terminal opt_dispatch_expr_list: go to state 130
+
+State 125
+	3    branch: OBJECTID ':' TYPEID . DARROW expr ';'
+
+	for terminal DARROW: shift and go to state 131
+
+State 126
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	31   expr: IF expr THEN expr ELSE expr . FI
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal FI: shift and go to state 132
+	for terminal LE: shift and go to state 61
+
+State 127
+	47   let_expr_tail: OBJECTID ':' TYPEID ',' let_expr_tail .
+
+	for terminal ')': reduce using rule 47
+	for terminal '*': reduce using rule 47
+	for terminal '+': reduce using rule 47
+	for terminal ',': reduce using rule 47
+	for terminal '-': reduce using rule 47
+	for terminal '.': reduce using rule 47
+	for terminal '/': reduce using rule 47
+	for terminal ';': reduce using rule 47
+	for terminal '<': reduce using rule 47
+	for terminal '=': reduce using rule 47
+	for terminal '@': reduce using rule 47
+	for terminal '}': reduce using rule 47
+	for terminal ELSE: reduce using rule 47
+	for terminal FI: reduce using rule 47
+	for terminal IN: reduce using rule 47
+	for terminal LE: reduce using rule 47
+	for terminal LOOP: reduce using rule 47
+	for terminal OF: reduce using rule 47
+	for terminal POOL: reduce using rule 47
+	for terminal THEN: reduce using rule 47
+
+State 128
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	46   let_expr_tail: OBJECTID ':' TYPEID ASSIGN expr . IN expr
+	48   let_expr_tail: OBJECTID ':' TYPEID ASSIGN expr . ',' let_expr_tail
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal ',': shift and go to state 133
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal IN: shift and go to state 134
+	for terminal LE: shift and go to state 61
+
+State 129
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	45   let_expr_tail: OBJECTID ':' TYPEID IN expr .
+
+	for terminal ')': reduce using rule 45
+	for terminal '*': reduce using rule 45, shift and go to state 52
+	for terminal '+': reduce using rule 45, shift and go to state 53
+	for terminal ',': reduce using rule 45
+	for terminal '-': reduce using rule 45, shift and go to state 54
+	for terminal '.': reduce using rule 45, shift and go to state 55
+	for terminal '/': shift and go to state 56, reduce using rule 45
+	for terminal ';': reduce using rule 45
+	for terminal '<': reduce using rule 45, shift and go to state 58
+	for terminal '=': reduce using rule 45, shift and go to state 59
+	for terminal '@': reduce using rule 45, shift and go to state 60
+	for terminal '}': reduce using rule 45
+	for terminal ELSE: reduce using rule 45
+	for terminal FI: reduce using rule 45
+	for terminal IN: reduce using rule 45
+	for terminal LE: reduce using rule 45, shift and go to state 61
+	for terminal LOOP: reduce using rule 45
+	for terminal OF: reduce using rule 45
+	for terminal POOL: reduce using rule 45
+	for terminal THEN: reduce using rule 45
+
+State 130
+	34   expr: expr '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list . ')'
+
+	for terminal ')': shift and go to state 135
+
+State 131
+	3    branch: OBJECTID ':' TYPEID DARROW . expr ';'
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 136
+
+State 132
+	31   expr: IF expr THEN expr ELSE expr FI .
+
+	for terminal ')': reduce using rule 31
+	for terminal '*': reduce using rule 31
+	for terminal '+': reduce using rule 31
+	for terminal ',': reduce using rule 31
+	for terminal '-': reduce using rule 31
+	for terminal '.': reduce using rule 31
+	for terminal '/': reduce using rule 31
+	for terminal ';': reduce using rule 31
+	for terminal '<': reduce using rule 31
+	for terminal '=': reduce using rule 31
+	for terminal '@': reduce using rule 31
+	for terminal '}': reduce using rule 31
+	for terminal ELSE: reduce using rule 31
+	for terminal FI: reduce using rule 31
+	for terminal IN: reduce using rule 31
+	for terminal LE: reduce using rule 31
+	for terminal LOOP: reduce using rule 31
+	for terminal OF: reduce using rule 31
+	for terminal POOL: reduce using rule 31
+	for terminal THEN: reduce using rule 31
+
+State 133
+	48   let_expr_tail: OBJECTID ':' TYPEID ASSIGN expr ',' . let_expr_tail
+
+	for terminal OBJECTID: shift and go to state 70
+
+	for non-terminal let_expr_tail: go to state 137
+
+State 134
+	46   let_expr_tail: OBJECTID ':' TYPEID ASSIGN expr IN . expr
+
+	for terminal '(': shift and go to state 36
+	for terminal '{': shift and go to state 37
+	for terminal '~': shift and go to state 38
+	for terminal BOOL_CONST: shift and go to state 39
+	for terminal CASE: shift and go to state 40
+	for terminal IF: shift and go to state 41
+	for terminal INT_CONST: shift and go to state 42
+	for terminal ISVOID: shift and go to state 43
+	for terminal LET: shift and go to state 44
+	for terminal NEW: shift and go to state 45
+	for terminal NOT: shift and go to state 46
+	for terminal OBJECTID: shift and go to state 47
+	for terminal STR_CONST: shift and go to state 48
+	for terminal WHILE: shift and go to state 49
+
+	for non-terminal expr: go to state 138
+
+State 135
+	34   expr: expr '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')' .
+
+	for terminal ')': reduce using rule 34
+	for terminal '*': reduce using rule 34
+	for terminal '+': reduce using rule 34
+	for terminal ',': reduce using rule 34
+	for terminal '-': reduce using rule 34
+	for terminal '.': reduce using rule 34
+	for terminal '/': reduce using rule 34
+	for terminal ';': reduce using rule 34
+	for terminal '<': reduce using rule 34
+	for terminal '=': reduce using rule 34
+	for terminal '@': reduce using rule 34
+	for terminal '}': reduce using rule 34
+	for terminal ELSE: reduce using rule 34
+	for terminal FI: reduce using rule 34
+	for terminal IN: reduce using rule 34
+	for terminal LE: reduce using rule 34
+	for terminal LOOP: reduce using rule 34
+	for terminal OF: reduce using rule 34
+	for terminal POOL: reduce using rule 34
+	for terminal THEN: reduce using rule 34
+
+State 136
+	3    branch: OBJECTID ':' TYPEID DARROW expr . ';'
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+
+	for terminal '*': shift and go to state 52
+	for terminal '+': shift and go to state 53
+	for terminal '-': shift and go to state 54
+	for terminal '.': shift and go to state 55
+	for terminal '/': shift and go to state 56
+	for terminal ';': shift and go to state 139
+	for terminal '<': shift and go to state 58
+	for terminal '=': shift and go to state 59
+	for terminal '@': shift and go to state 60
+	for terminal LE: shift and go to state 61
+
+State 137
+	48   let_expr_tail: OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail .
+
+	for terminal ')': reduce using rule 48
+	for terminal '*': reduce using rule 48
+	for terminal '+': reduce using rule 48
+	for terminal ',': reduce using rule 48
+	for terminal '-': reduce using rule 48
+	for terminal '.': reduce using rule 48
+	for terminal '/': reduce using rule 48
+	for terminal ';': reduce using rule 48
+	for terminal '<': reduce using rule 48
+	for terminal '=': reduce using rule 48
+	for terminal '@': reduce using rule 48
+	for terminal '}': reduce using rule 48
+	for terminal ELSE: reduce using rule 48
+	for terminal FI: reduce using rule 48
+	for terminal IN: reduce using rule 48
+	for terminal LE: reduce using rule 48
+	for terminal LOOP: reduce using rule 48
+	for terminal OF: reduce using rule 48
+	for terminal POOL: reduce using rule 48
+	for terminal THEN: reduce using rule 48
+
+State 138
+	18   expr: expr . '=' expr
+	19   expr: expr . LE expr
+	20   expr: expr . '<' expr
+	22   expr: expr . '/' expr
+	23   expr: expr . '*' expr
+	24   expr: expr . '-' expr
+	25   expr: expr . '+' expr
+	33   expr: expr . '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	34   expr: expr . '@' TYPEID '.' OBJECTID '(' opt_dispatch_expr_list ')'
+	46   let_expr_tail: OBJECTID ':' TYPEID ASSIGN expr IN expr .
+
+	for terminal ')': reduce using rule 46
+	for terminal '*': shift and go to state 52, reduce using rule 46
+	for terminal '+': reduce using rule 46, shift and go to state 53
+	for terminal ',': reduce using rule 46
+	for terminal '-': reduce using rule 46, shift and go to state 54
+	for terminal '.': shift and go to state 55, reduce using rule 46
+	for terminal '/': shift and go to state 56, reduce using rule 46
+	for terminal ';': reduce using rule 46
+	for terminal '<': shift and go to state 58, reduce using rule 46
+	for terminal '=': shift and go to state 59, reduce using rule 46
+	for terminal '@': shift and go to state 60, reduce using rule 46
+	for terminal '}': reduce using rule 46
+	for terminal ELSE: reduce using rule 46
+	for terminal FI: reduce using rule 46
+	for terminal IN: reduce using rule 46
+	for terminal LE: reduce using rule 46, shift and go to state 61
+	for terminal LOOP: reduce using rule 46
+	for terminal OF: reduce using rule 46
+	for terminal POOL: reduce using rule 46
+	for terminal THEN: reduce using rule 46
+
+State 139
+	3    branch: OBJECTID ':' TYPEID DARROW expr ';' .
+
+	for terminal ESAC: reduce using rule 3
+	for terminal OBJECTID: reduce using rule 3
