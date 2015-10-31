@@ -82,7 +82,7 @@ def get_sample_5():
 
 
 def get_sample_6():
-    # Sample ambiguous grammar for the Alex Aiken's COOL programming language
+    # Sample ambiguous grammar for Alex Aiken's COOL programming language
     return Grammar([
         NonTerminal('program', [
             "class_list"
