@@ -1,0 +1,328 @@
+Indexed grammar rules (11 in total):
+0    $accept: p
+1    p: tit ss
+2    s: NOTE LEFT OF TEXT ':' TEXT '\n'
+3     | TEXT '->' TEXT ':' TEXT '\n'
+4     | LOOP TEXT '\n' ss END '\n'
+5     | LOOP TEXT '\n' END '\n'
+6     | ALT TEXT '\n' ss ELSE '\n' ss END '\n'
+7     | ALT TEXT '\n' ss END '\n'
+8    ss: s ss
+9      | s
+10   tit: TITLE TEXT '\n'
+
+Grammar non-terminals (5 in total):
+	$accept
+	p
+	s
+	ss
+	tit
+
+Grammar terminals (12 in total):
+	'->'
+	':'
+	'\n'
+	ALT
+	ELSE
+	END
+	LEFT
+	LOOP
+	NOTE
+	OF
+	TEXT
+	TITLE
+
+PARSING TABLE SUMMARY
+Is the given grammar LALR(1)? Yes
+
+State 0
+	0    $accept: . p
+
+	for terminal TITLE: shift and go to state 3
+
+	for non-terminal p: go to state 1
+	for non-terminal tit: go to state 2
+
+State 1
+	0    $accept: p .
+
+	for terminal $end: accept 
+
+State 2
+	1    p: tit . ss
+
+	for terminal ALT: shift and go to state 6
+	for terminal LOOP: shift and go to state 7
+	for terminal NOTE: shift and go to state 8
+	for terminal TEXT: shift and go to state 9
+
+	for non-terminal s: go to state 4
+	for non-terminal ss: go to state 5
+
+State 3
+	10   tit: TITLE . TEXT '\n'
+
+	for terminal TEXT: shift and go to state 10
+
+State 4
+	8    ss: s . ss
+	9    ss: s .
+
+	for terminal $end: reduce using rule 9
+	for terminal ALT: shift and go to state 6
+	for terminal ELSE: reduce using rule 9
+	for terminal END: reduce using rule 9
+	for terminal LOOP: shift and go to state 7
+	for terminal NOTE: shift and go to state 8
+	for terminal TEXT: shift and go to state 9
+
+	for non-terminal s: go to state 4
+	for non-terminal ss: go to state 11
+
+State 5
+	1    p: tit ss .
+
+	for terminal $end: reduce using rule 1
+
+State 6
+	6    s: ALT . TEXT '\n' ss ELSE '\n' ss END '\n'
+	7    s: ALT . TEXT '\n' ss END '\n'
+
+	for terminal TEXT: shift and go to state 12
+
+State 7
+	4    s: LOOP . TEXT '\n' ss END '\n'
+	5    s: LOOP . TEXT '\n' END '\n'
+
+	for terminal TEXT: shift and go to state 13
+
+State 8
+	2    s: NOTE . LEFT OF TEXT ':' TEXT '\n'
+
+	for terminal LEFT: shift and go to state 14
+
+State 9
+	3    s: TEXT . '->' TEXT ':' TEXT '\n'
+
+	for terminal '->': shift and go to state 15
+
+State 10
+	10   tit: TITLE TEXT . '\n'
+
+	for terminal '\n': shift and go to state 16
+
+State 11
+	8    ss: s ss .
+
+	for terminal $end: reduce using rule 8
+	for terminal ELSE: reduce using rule 8
+	for terminal END: reduce using rule 8
+
+State 12
+	6    s: ALT TEXT . '\n' ss ELSE '\n' ss END '\n'
+	7    s: ALT TEXT . '\n' ss END '\n'
+
+	for terminal '\n': shift and go to state 17
+
+State 13
+	4    s: LOOP TEXT . '\n' ss END '\n'
+	5    s: LOOP TEXT . '\n' END '\n'
+
+	for terminal '\n': shift and go to state 18
+
+State 14
+	2    s: NOTE LEFT . OF TEXT ':' TEXT '\n'
+
+	for terminal OF: shift and go to state 19
+
+State 15
+	3    s: TEXT '->' . TEXT ':' TEXT '\n'
+
+	for terminal TEXT: shift and go to state 20
+
+State 16
+	10   tit: TITLE TEXT '\n' .
+
+	for terminal ALT: reduce using rule 10
+	for terminal LOOP: reduce using rule 10
+	for terminal NOTE: reduce using rule 10
+	for terminal TEXT: reduce using rule 10
+
+State 17
+	6    s: ALT TEXT '\n' . ss ELSE '\n' ss END '\n'
+	7    s: ALT TEXT '\n' . ss END '\n'
+
+	for terminal ALT: shift and go to state 6
+	for terminal LOOP: shift and go to state 7
+	for terminal NOTE: shift and go to state 8
+	for terminal TEXT: shift and go to state 9
+
+	for non-terminal s: go to state 4
+	for non-terminal ss: go to state 21
+
+State 18
+	4    s: LOOP TEXT '\n' . ss END '\n'
+	5    s: LOOP TEXT '\n' . END '\n'
+
+	for terminal ALT: shift and go to state 6
+	for terminal END: shift and go to state 23
+	for terminal LOOP: shift and go to state 7
+	for terminal NOTE: shift and go to state 8
+	for terminal TEXT: shift and go to state 9
+
+	for non-terminal s: go to state 4
+	for non-terminal ss: go to state 22
+
+State 19
+	2    s: NOTE LEFT OF . TEXT ':' TEXT '\n'
+
+	for terminal TEXT: shift and go to state 24
+
+State 20
+	3    s: TEXT '->' TEXT . ':' TEXT '\n'
+
+	for terminal ':': shift and go to state 25
+
+State 21
+	6    s: ALT TEXT '\n' ss . ELSE '\n' ss END '\n'
+	7    s: ALT TEXT '\n' ss . END '\n'
+
+	for terminal ELSE: shift and go to state 26
+	for terminal END: shift and go to state 27
+
+State 22
+	4    s: LOOP TEXT '\n' ss . END '\n'
+
+	for terminal END: shift and go to state 28
+
+State 23
+	5    s: LOOP TEXT '\n' END . '\n'
+
+	for terminal '\n': shift and go to state 29
+
+State 24
+	2    s: NOTE LEFT OF TEXT . ':' TEXT '\n'
+
+	for terminal ':': shift and go to state 30
+
+State 25
+	3    s: TEXT '->' TEXT ':' . TEXT '\n'
+
+	for terminal TEXT: shift and go to state 31
+
+State 26
+	6    s: ALT TEXT '\n' ss ELSE . '\n' ss END '\n'
+
+	for terminal '\n': shift and go to state 32
+
+State 27
+	7    s: ALT TEXT '\n' ss END . '\n'
+
+	for terminal '\n': shift and go to state 33
+
+State 28
+	4    s: LOOP TEXT '\n' ss END . '\n'
+
+	for terminal '\n': shift and go to state 34
+
+State 29
+	5    s: LOOP TEXT '\n' END '\n' .
+
+	for terminal $end: reduce using rule 5
+	for terminal ALT: reduce using rule 5
+	for terminal ELSE: reduce using rule 5
+	for terminal END: reduce using rule 5
+	for terminal LOOP: reduce using rule 5
+	for terminal NOTE: reduce using rule 5
+	for terminal TEXT: reduce using rule 5
+
+State 30
+	2    s: NOTE LEFT OF TEXT ':' . TEXT '\n'
+
+	for terminal TEXT: shift and go to state 35
+
+State 31
+	3    s: TEXT '->' TEXT ':' TEXT . '\n'
+
+	for terminal '\n': shift and go to state 36
+
+State 32
+	6    s: ALT TEXT '\n' ss ELSE '\n' . ss END '\n'
+
+	for terminal ALT: shift and go to state 6
+	for terminal LOOP: shift and go to state 7
+	for terminal NOTE: shift and go to state 8
+	for terminal TEXT: shift and go to state 9
+
+	for non-terminal s: go to state 4
+	for non-terminal ss: go to state 37
+
+State 33
+	7    s: ALT TEXT '\n' ss END '\n' .
+
+	for terminal $end: reduce using rule 7
+	for terminal ALT: reduce using rule 7
+	for terminal ELSE: reduce using rule 7
+	for terminal END: reduce using rule 7
+	for terminal LOOP: reduce using rule 7
+	for terminal NOTE: reduce using rule 7
+	for terminal TEXT: reduce using rule 7
+
+State 34
+	4    s: LOOP TEXT '\n' ss END '\n' .
+
+	for terminal $end: reduce using rule 4
+	for terminal ALT: reduce using rule 4
+	for terminal ELSE: reduce using rule 4
+	for terminal END: reduce using rule 4
+	for terminal LOOP: reduce using rule 4
+	for terminal NOTE: reduce using rule 4
+	for terminal TEXT: reduce using rule 4
+
+State 35
+	2    s: NOTE LEFT OF TEXT ':' TEXT . '\n'
+
+	for terminal '\n': shift and go to state 38
+
+State 36
+	3    s: TEXT '->' TEXT ':' TEXT '\n' .
+
+	for terminal $end: reduce using rule 3
+	for terminal ALT: reduce using rule 3
+	for terminal ELSE: reduce using rule 3
+	for terminal END: reduce using rule 3
+	for terminal LOOP: reduce using rule 3
+	for terminal NOTE: reduce using rule 3
+	for terminal TEXT: reduce using rule 3
+
+State 37
+	6    s: ALT TEXT '\n' ss ELSE '\n' ss . END '\n'
+
+	for terminal END: shift and go to state 39
+
+State 38
+	2    s: NOTE LEFT OF TEXT ':' TEXT '\n' .
+
+	for terminal $end: reduce using rule 2
+	for terminal ALT: reduce using rule 2
+	for terminal ELSE: reduce using rule 2
+	for terminal END: reduce using rule 2
+	for terminal LOOP: reduce using rule 2
+	for terminal NOTE: reduce using rule 2
+	for terminal TEXT: reduce using rule 2
+
+State 39
+	6    s: ALT TEXT '\n' ss ELSE '\n' ss END . '\n'
+
+	for terminal '\n': shift and go to state 40
+
+State 40
+	6    s: ALT TEXT '\n' ss ELSE '\n' ss END '\n' .
+
+	for terminal $end: reduce using rule 6
+	for terminal ALT: reduce using rule 6
+	for terminal ELSE: reduce using rule 6
+	for terminal END: reduce using rule 6
+	for terminal LOOP: reduce using rule 6
+	for terminal NOTE: reduce using rule 6
+	for terminal TEXT: reduce using rule 6

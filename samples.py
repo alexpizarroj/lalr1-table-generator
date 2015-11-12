@@ -148,3 +148,42 @@ def get_sample_6():
             "OBJECTID ':' TYPEID ASSIGN expr ',' let_expr_tail"
         ])
     ])
+
+
+def get_sample_7():
+    return Grammar([
+        NonTerminal('S', [
+            "'a' B S", "'a' 'a'", "'a'"
+        ]),
+        NonTerminal('B', [
+            "'a'"
+        ])
+    ])
+
+
+def get_sample_8():
+    return Grammar([
+        NonTerminal('S', [
+            "'b' A 'b'", "'b' B 'a'"
+        ]),
+        NonTerminal('A', [
+            "'a' S", "C B"
+        ]),
+        NonTerminal('B', [
+            "'b'", "B 'c'"
+        ]),
+        NonTerminal('C', [
+            "'c'", "'c' C"
+        ])
+    ])
+
+
+def get_sample_9():
+    return Grammar([
+        NonTerminal('S', [
+            "T 'a' T"
+        ]),
+        NonTerminal('T', [
+            "", "'b' 'b' T"
+        ])
+    ])
